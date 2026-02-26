@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: var(--tg-theme-bg-color, #f5f5f5);
+            text-align: center;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        .info {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>📱 Тест Web App</h1>
+    
+    <div class="info">
+        <p id="status">⏳ Инициализация...</p>
+        <p id="user-info"></p>
+    </div>
+    
+    <button onclick="sendTestData()">📤 Отправить тест</button>
+    <button onclick="closeApp()">❌ Закрыть</button>
+
+    <script>
+        // Инициализация Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        
+        // Получаем информацию о пользователе
+        const user = tg.initDataUnsafe?.user;
+        
+        // Обновляем статус
+        document.getElementById('status').innerHTML = '✅ Web App загружен';
+        
+        if (user) {
+            document.getElementById('user-info').innerHTML = 
+                `👤 Пользователь: ${user.first_name} ${user.last_name || ''}<br>` +
+                `🆔 ID: ${user.id}`;
+        }
+        
+        // Функция отправки данных
+        function sendTestData() {
+            const testData = {
+                type: 'test',
+                user_id: user?.id,
+                message: 'Тестовое сообщение',
+                time: new Date().toISOString()
+            };
+            
+            // Показываем что отправляем
+            tg.showAlert('Отправка данных...');
+            
+            // Отправляем в бот
+            tg.sendData(JSON.stringify(testData));
+            
+            // Показываем подтверждение
+            tg.showAlert('✅ Данные отправлены!');
+        }
+        
+        // Функция закрытия
+        function closeApp() {
+            tg.close();
+        }
+        
+        // Главная кнопка Telegram
+        tg.MainButton.setText("ОТПРАВИТЬ");
+        tg.MainButton.onClick(sendTestData);
+        tg.MainButton.show();
+    </script>
+</body>
+</html>
