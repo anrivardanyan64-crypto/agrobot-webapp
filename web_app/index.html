@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { 
+            font-family: Arial; 
+            padding: 20px; 
+            background: var(--tg-theme-bg-color, #f5f5f5);
+            margin: 0;
+        }
+        .container { max-width: 600px; margin: 0 auto; }
+        h1 { color: var(--tg-theme-text-color, #333); }
+        button { 
+            background: #4CAF50; 
+            color: white; 
+            padding: 15px; 
+            border: none; 
+            border-radius: 10px;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .section {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Мониторинг теплицы</h1>
+        <p>Заполните показатели</p>
+        
+        <div class="section">
+            <h3>💧 Параметры раствора</h3>
+            <input type="number" id="ec" placeholder="EC (mS/cm)" step="0.1">
+            <input type="number" id="ph" placeholder="pH" step="0.1" min="0" max="14">
+            <input type="number" id="drainage" placeholder="Дренаж %" min="0" max="100">
+        </div>
+        
+        <div class="section">
+            <h3>🌡️ Климат ночью</h3>
+            <input type="number" id="night_temp" placeholder="Температура °C" step="0.5">
+            <input type="number" id="night_humidity" placeholder="Влажность %" min="0" max="100">
+        </div>
+        
+        <button onclick="sendData()">📤 Отправить отчет</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        
+        function sendData() {
+            const data = {
+                ec: document.getElementById('ec').value,
+                ph: document.getElementById('ph').value,
+                drainage: document.getElementById('drainage').value,
+                night_temp: document.getElementById('night_temp').value,
+                night_humidity: document.getElementById('night_humidity').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            tg.sendData(JSON.stringify(data));
+            tg.showAlert('Отчет отправлен!');
+            setTimeout(() => tg.close(), 2000);
+        }
+    </script>
+</body>
+</html>
