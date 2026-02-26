@@ -20,12 +20,24 @@
             font-size: 18px;
             margin: 10px;
             cursor: pointer;
+            width: 80%;
+            max-width: 300px;
         }
         .info {
             background: white;
             padding: 20px;
             border-radius: 10px;
             margin: 20px 0;
+            text-align: left;
+        }
+        .debug {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            text-align: left;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -33,58 +45,152 @@
     <h1>📱 Тест Web App</h1>
     
     <div class="info">
+        <h3>Статус:</h3>
         <p id="status">⏳ Инициализация...</p>
+        <p id="tg-version"></p>
         <p id="user-info"></p>
     </div>
     
-    <button onclick="sendTestData()">📤 Отправить тест</button>
-    <button onclick="closeApp()">❌ Закрыть</button>
+    <button onclick="sendTestData()">📤 1. Отправить тест</button>
+    <button onclick="testMainButton()">🔘 2. Тест MainButton</button>
+    <button onclick="showDebug()">🔍 3. Показать отладку</button>
+    <button onclick="closeApp()">❌ 4. Закрыть</button>
+    
+    <div id="debug" class="debug" style="display: none;">
+        <h4>Отладочная информация:</h4>
+        <pre id="debug-output"></pre>
+    </div>
 
     <script>
-        // Инициализация Telegram Web App
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+        // Отладочная функция
+        function log(message) {
+            console.log(message);
+            const debugOutput = document.getElementById('debug-output');
+            if (debugOutput) {
+                debugOutput.innerHTML += message + '\n';
+            }
+        }
         
-        // Получаем информацию о пользователе
-        const user = tg.initDataUnsafe?.user;
+        log('Скрипт загружен');
         
-        // Обновляем статус
-        document.getElementById('status').innerHTML = '✅ Web App загружен';
-        
-        if (user) {
-            document.getElementById('user-info').innerHTML = 
-                `👤 Пользователь: ${user.first_name} ${user.last_name || ''}<br>` +
-                `🆔 ID: ${user.id}`;
+        // Проверяем наличие Telegram Web App
+        if (!window.Telegram || !window.Telegram.WebApp) {
+            document.getElementById('status').innerHTML = '❌ Telegram Web App не найден!';
+            log('❌ Telegram Web App не найден');
+        } else {
+            log('✅ Telegram Web App найден');
+            
+            // Инициализация
+            const tg = window.Telegram.WebApp;
+            document.getElementById('tg-version').innerHTML = `Версия: ${tg.version || 'неизвестно'}`;
+            
+            try {
+                tg.expand();
+                log('✅ expand() выполнен');
+                
+                // Получаем данные
+                const initData = tg.initData;
+                const initDataUnsafe = tg.initDataUnsafe;
+                
+                log('initData: ' + (initData ? 'есть' : 'нет'));
+                log('initDataUnsafe: ' + (initDataUnsafe ? 'есть' : 'нет'));
+                
+                if (initDataUnsafe && initDataUnsafe.user) {
+                    const user = initDataUnsafe.user;
+                    document.getElementById('user-info').innerHTML = 
+                        `👤 Пользователь: ${user.first_name} ${user.last_name || ''}<br>` +
+                        `🆔 ID: ${user.id}<br>` +
+                        `👤 Username: ${user.username || 'нет'}`;
+                    log(`✅ Пользователь: ${user.first_name} (ID: ${user.id})`);
+                } else {
+                    document.getElementById('user-info').innerHTML = '❌ Нет данных о пользователе';
+                    log('❌ Нет данных о пользователе');
+                }
+                
+                document.getElementById('status').innerHTML = '✅ Web App загружен и готов к работе';
+                
+            } catch (e) {
+                document.getElementById('status').innerHTML = '❌ Ошибка: ' + e.message;
+                log('❌ Ошибка: ' + e.message);
+            }
         }
         
         // Функция отправки данных
         function sendTestData() {
+            log('sendTestData() вызвана');
+            
+            if (!window.Telegram || !window.Telegram.WebApp) {
+                alert('❌ Telegram Web App не инициализирован');
+                return;
+            }
+            
+            const tg = window.Telegram.WebApp;
+            
             const testData = {
                 type: 'test',
-                user_id: user?.id,
+                user_id: tg.initDataUnsafe?.user?.id,
                 message: 'Тестовое сообщение',
-                time: new Date().toISOString()
+                time: new Date().toISOString(),
+                test_number: Math.floor(Math.random() * 1000)
             };
             
-            // Показываем что отправляем
-            tg.showAlert('Отправка данных...');
+            log('Отправляем данные: ' + JSON.stringify(testData));
             
-            // Отправляем в бот
-            tg.sendData(JSON.stringify(testData));
-            
-            // Показываем подтверждение
-            tg.showAlert('✅ Данные отправлены!');
+            try {
+                // Показываем что отправляем
+                tg.showAlert('Отправка данных...');
+                
+                // Отправляем в бот
+                tg.sendData(JSON.stringify(testData));
+                
+                log('✅ sendData() выполнен');
+                
+                // Показываем подтверждение
+                tg.showAlert('✅ Данные отправлены! Проверьте консоль бота');
+                
+            } catch (e) {
+                log('❌ Ошибка при отправке: ' + e.message);
+                alert('Ошибка: ' + e.message);
+            }
         }
         
-        // Функция закрытия
+        // Тест MainButton
+        function testMainButton() {
+            log('testMainButton() вызвана');
+            
+            if (!window.Telegram || !window.Telegram.WebApp) {
+                alert('❌ Telegram Web App не инициализирован');
+                return;
+            }
+            
+            const tg = window.Telegram.WebApp;
+            
+            tg.MainButton.setText("ТЕСТОВАЯ КНОПКА");
+            tg.MainButton.onClick(function() {
+                log('MainButton нажата');
+                sendTestData();
+            });
+            tg.MainButton.show();
+            
+            tg.showAlert('✅ MainButton активирована');
+        }
+        
+        // Показать отладку
+        function showDebug() {
+            const debugDiv = document.getElementById('debug');
+            if (debugDiv.style.display === 'none') {
+                debugDiv.style.display = 'block';
+            } else {
+                debugDiv.style.display = 'none';
+            }
+        }
+        
+        // Закрыть
         function closeApp() {
-            tg.close();
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.close();
+            }
         }
-        
-        // Главная кнопка Telegram
-        tg.MainButton.setText("ОТПРАВИТЬ");
-        tg.MainButton.onClick(sendTestData);
-        tg.MainButton.show();
     </script>
 </body>
 </html>
