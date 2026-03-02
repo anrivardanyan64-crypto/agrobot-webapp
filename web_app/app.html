@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: Arial; padding: 20px; text-align: center; }
+        button { background: #4CAF50; color: white; padding: 20px; font-size: 20px; border: none; border-radius: 10px; width: 100%; cursor: pointer; }
+        .info { background: #f0f0f0; padding: 20px; border-radius: 10px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>🌱 WEB APP</h1>
+    <div class="info" id="info">Загрузка...</div>
+    <button onclick="sendData()">📤 ОТПРАВИТЬ</button>
+    
+    <script>
+        const tg = Telegram.WebApp;
+        tg.expand();
+        
+        const user = tg.initDataUnsafe?.user;
+        document.getElementById('info').innerHTML = user ? 
+            `✅ Работает!<br>ID: ${user.id}` : 
+            `❌ Нет пользователя`;
+        
+        function sendData() {
+            tg.sendData(JSON.stringify({
+                user_id: user?.id,
+                time: new Date().toISOString()
+            }));
+            tg.showAlert('Отправлено!');
+            setTimeout(() => tg.close(), 1000);
+        }
+    </script>
+</body>
+</html>
