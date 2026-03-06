@@ -4,33 +4,108 @@
     <meta charset="UTF-8">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: Arial; padding: 20px; text-align: center; }
-        button { background: #4CAF50; color: white; padding: 20px; font-size: 20px; border: none; border-radius: 10px; width: 100%; cursor: pointer; }
-        .info { background: #f0f0f0; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        body { font-family: Arial; padding: 20px; text-align: center; background: var(--tg-theme-bg-color, #f5f5f5); }
+        button { 
+            background: #4CAF50; 
+            color: white; 
+            padding: 20px; 
+            font-size: 20px; 
+            border: none; 
+            border-radius: 10px; 
+            width: 100%; 
+            margin: 10px 0;
+            cursor: pointer;
+        }
+        .info { 
+            background: var(--tg-theme-secondary-bg-color, white); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin: 20px 0;
+            font-size: 18px;
+        }
+        .status { color: #666; margin: 10px 0; }
     </style>
 </head>
 <body>
-    <h1>🌱 WEB APP</h1>
+    <h1>🌱 ФИНАЛЬНЫЙ ТЕСТ</h1>
+    
     <div class="info" id="info">Загрузка...</div>
-    <button onclick="sendData()">📤 ОТПРАВИТЬ</button>
+    
+    <div class="status" id="status"></div>
+    
+    <button onclick="sendData1()">📤 СПОСОБ 1: Простая отправка</button>
+    <button onclick="sendData2()">🔘 СПОСОБ 2: Через MainButton</button>
     
     <script>
         const tg = Telegram.WebApp;
         tg.expand();
+        tg.ready();
         
         const user = tg.initDataUnsafe?.user;
-        document.getElementById('info').innerHTML = user ? 
-            `✅ Работает!<br>ID: ${user.id}` : 
-            `❌ Нет пользователя`;
+        const info = document.getElementById('info');
+        const statusDiv = document.getElementById('status');
         
-        function sendData() {
-            tg.sendData(JSON.stringify({
-                user_id: user?.id,
-                time: new Date().toISOString()
-            }));
-            tg.showAlert('Отправлено!');
-            setTimeout(() => tg.close(), 1000);
+        if (user) {
+            info.innerHTML = `
+                ✅ Работает!<br>
+                👤 ID: ${user.id}<br>
+                📊 Имя: ${user.first_name || ''}<br>
+                🔧 Версия: ${tg.version}
+            `;
+        } else {
+            info.innerHTML = '❌ Нет пользователя';
         }
+        
+        function log(message) {
+            console.log(message);
+            statusDiv.innerHTML = message;
+        }
+        
+        // Способ 1: Прямая отправка
+        function sendData1() {
+            const data = {
+                user_id: user?.id,
+                time: new Date().toISOString(),
+                method: 'direct'
+            };
+            
+            log('📤 Отправка способ 1...');
+            console.log('Данные:', data);
+            
+            tg.sendData(JSON.stringify(data));
+            
+            log('✅ Способ 1: отправлено!');
+            tg.showAlert('✅ Способ 1 выполнен');
+        }
+        
+        // Способ 2: Через MainButton
+        function sendData2() {
+            const data = {
+                user_id: user?.id,
+                time: new Date().toISOString(),
+                method: 'main_button'
+            };
+            
+            log('📤 Отправка способ 2...');
+            console.log('Данные:', data);
+            
+            tg.MainButton.setText("ОТПРАВКА...");
+            tg.MainButton.showProgress(true);
+            
+            tg.sendData(JSON.stringify(data));
+            
+            tg.MainButton.hideProgress();
+            tg.MainButton.setText("ГОТОВО");
+            
+            log('✅ Способ 2: отправлено!');
+            tg.showAlert('✅ Способ 2 выполнен');
+        }
+        
+        // Автоматический тест при загрузке
+        window.onload = function() {
+            log('✅ Страница загружена, Telegram API готов');
+            console.log('Telegram Web App version:', tg.version);
+        };
     </script>
 </body>
 </html>
