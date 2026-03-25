@@ -4,27 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { padding: 20px; font-family: Arial; text-align: center; background: #f5f5f5; }
+        .card { background: white; border-radius: 16px; padding: 20px; margin: 10px 0; }
+        button { background: #4CAF50; color: white; padding: 16px; font-size: 18px; border: none; border-radius: 12px; width: 100%; margin: 8px 0; cursor: pointer; }
+        .info { background: #e8f5e9; padding: 12px; border-radius: 10px; margin: 10px 0; font-size: 14px; }
+        .debug { background: #f0f0f0; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 11px; text-align: left; word-break: break-all; margin-top: 10px; }
+    </style>
 </head>
-<body style="padding: 20px; text-align: center; font-family: Arial;">
-    <h1>📱 ПРОСТАЯ ОТПРАВКА</h1>
+<body>
+    <h1>📱 ТЕЛЕФОН ТЕСТ</h1>
     
-    <div id="info" style="background: #e8f5e9; padding: 15px; border-radius: 10px; margin: 20px 0;">
-        ⏳ Загрузка...
+    <div class="card">
+        <div id="info" class="info">⏳ Проверка...</div>
+        <button id="sendBtn">📤 ОТПРАВИТЬ ДАННЫЕ</button>
+        <button id="closeBtn">❌ ЗАКРЫТЬ</button>
+        <div id="debug" class="debug">📋 Лог:</div>
     </div>
     
-    <button id="sendBtn" style="background: #4CAF50; color: white; padding: 20px; font-size: 20px; border: none; border-radius: 12px; width: 100%; cursor: pointer;">
-        📤 ОТПРАВИТЬ
-    </button>
-    
-    <button id="closeBtn" style="background: #f44336; color: white; padding: 15px; font-size: 16px; border: none; border-radius: 12px; width: 100%; margin-top: 10px; cursor: pointer;">
-        ❌ ЗАКРЫТЬ
-    </button>
-    
     <script>
-        // Инициализация
+        function addLog(msg) {
+            const debug = document.getElementById('debug');
+            debug.innerHTML += `<br>${new Date().toLocaleTimeString()}: ${msg}`;
+            console.log(msg);
+        }
+        
+        addLog('Скрипт загружен');
+        
         const tg = Telegram.WebApp;
         tg.expand();
         tg.ready();
+        addLog('tg.ready() выполнен');
         
         const user = tg.initDataUnsafe?.user;
         const info = document.getElementById('info');
@@ -33,17 +43,23 @@
             info.innerHTML = `
                 ✅ Web App РАБОТАЕТ!<br>
                 👤 ${user.first_name} (ID: ${user.id})<br>
-                📱 Версия: ${tg.version}
+                📱 Версия: ${tg.version}<br>
+                📊 initData: ${tg.initData ? 'есть' : 'нет'}
             `;
+            info.style.background = "#e8f5e9";
+            addLog(`Пользователь: ${user.first_name} (ID: ${user.id})`);
         } else {
-            info.innerHTML = '❌ Нет данных пользователя!';
-            info.style.background = '#ffebee';
+            info.innerHTML = '❌ НЕТ ДАННЫХ ПОЛЬЗОВАТЕЛЯ!';
+            info.style.background = "#ffebee";
+            addLog('ОШИБКА: Нет данных пользователя');
         }
         
-        // Функция отправки
         function sendData() {
+            addLog('sendData() вызвана');
+            
             if (!user) {
-                tg.showAlert('Ошибка: Нет данных пользователя!');
+                addLog('❌ Нет пользователя');
+                tg.showAlert('Ошибка: нет данных пользователя');
                 return;
             }
             
@@ -51,32 +67,39 @@
                 user_id: user.id,
                 user_name: user.first_name,
                 time: new Date().toISOString(),
-                test: true
+                phone_test: true,
+                device: 'mobile'
             };
             
-            console.log('Отправка:', data);
+            addLog(`Отправляем: ${JSON.stringify(data)}`);
             
-            // Единственный правильный способ отправки
-            tg.sendData(JSON.stringify(data));
-            
-            tg.showAlert('✅ Отправлено!');
-            
-            // Закрываем через 2 секунды
-            setTimeout(() => {
-                tg.close();
-            }, 2000);
+            try {
+                tg.sendData(JSON.stringify(data));
+                addLog('✅ sendData() выполнен');
+                tg.showAlert('✅ Отправлено! Проверьте консоль бота');
+                
+                setTimeout(() => {
+                    addLog('Закрываем');
+                    tg.close();
+                }, 2000);
+            } catch (e) {
+                addLog(`❌ Ошибка: ${e.message}`);
+                tg.showAlert('Ошибка: ' + e.message);
+            }
         }
         
-        // Кнопки
-        document.getElementById('sendBtn').onclick = sendData;
-        document.getElementById('closeBtn').onclick = () => tg.close();
+        function closeApp() {
+            addLog('Закрытие по кнопке');
+            tg.close();
+        }
         
-        // Main Button
+        document.getElementById('sendBtn').onclick = sendData;
+        document.getElementById('closeBtn').onclick = closeApp;
+        
         tg.MainButton.setText("ОТПРАВИТЬ");
         tg.MainButton.onClick(sendData);
         tg.MainButton.show();
-        
-        console.log('Готово, user:', user);
+        addLog('Main Button настроен');
     </script>
 </body>
 </html>
