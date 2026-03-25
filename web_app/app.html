@@ -229,6 +229,7 @@
         const tg = Telegram.WebApp;
         tg.expand();
         tg.ready();
+        tg.enableClosingConfirmation();
         
         const user = tg.initDataUnsafe?.user;
         const userInfo = document.getElementById('userInfo');
