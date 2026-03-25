@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body style="padding: 20px; text-align: center; font-family: Arial;">
+    <h1>📱 ПРОСТАЯ ОТПРАВКА</h1>
+    
+    <div id="info" style="background: #e8f5e9; padding: 15px; border-radius: 10px; margin: 20px 0;">
+        ⏳ Загрузка...
+    </div>
+    
+    <button id="sendBtn" style="background: #4CAF50; color: white; padding: 20px; font-size: 20px; border: none; border-radius: 12px; width: 100%; cursor: pointer;">
+        📤 ОТПРАВИТЬ
+    </button>
+    
+    <button id="closeBtn" style="background: #f44336; color: white; padding: 15px; font-size: 16px; border: none; border-radius: 12px; width: 100%; margin-top: 10px; cursor: pointer;">
+        ❌ ЗАКРЫТЬ
+    </button>
+    
+    <script>
+        // Инициализация
+        const tg = Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+        
+        const user = tg.initDataUnsafe?.user;
+        const info = document.getElementById('info');
+        
+        if (user) {
+            info.innerHTML = `
+                ✅ Web App РАБОТАЕТ!<br>
+                👤 ${user.first_name} (ID: ${user.id})<br>
+                📱 Версия: ${tg.version}
+            `;
+        } else {
+            info.innerHTML = '❌ Нет данных пользователя!';
+            info.style.background = '#ffebee';
+        }
+        
+        // Функция отправки
+        function sendData() {
+            if (!user) {
+                tg.showAlert('Ошибка: Нет данных пользователя!');
+                return;
+            }
+            
+            const data = {
+                user_id: user.id,
+                user_name: user.first_name,
+                time: new Date().toISOString(),
+                test: true
+            };
+            
+            console.log('Отправка:', data);
+            
+            // Единственный правильный способ отправки
+            tg.sendData(JSON.stringify(data));
+            
+            tg.showAlert('✅ Отправлено!');
+            
+            // Закрываем через 2 секунды
+            setTimeout(() => {
+                tg.close();
+            }, 2000);
+        }
+        
+        // Кнопки
+        document.getElementById('sendBtn').onclick = sendData;
+        document.getElementById('closeBtn').onclick = () => tg.close();
+        
+        // Main Button
+        tg.MainButton.setText("ОТПРАВИТЬ");
+        tg.MainButton.onClick(sendData);
+        tg.MainButton.show();
+        
+        console.log('Готово, user:', user);
+    </script>
+</body>
+</html>
