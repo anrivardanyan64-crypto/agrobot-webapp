@@ -267,8 +267,7 @@
             if (!user) {
                 console.log("⚠️ user = null, но продолжаем");
             }
-            tg.sendData("TEST_DATA");
-            // Показываем загрузку
+            tg.sendData(JSON.stringify(reportData));            // Показываем загрузку
             loading.style.display = 'flex';
             
             // Собираем данные
