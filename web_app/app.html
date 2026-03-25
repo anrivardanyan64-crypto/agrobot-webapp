@@ -1,347 +1,174 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: var(--tg-theme-bg-color, #f5f5f5);
-            padding: 16px;
-            min-height: 100vh;
-            padding-bottom: 80px;
-        }
-        
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            background: var(--tg-theme-secondary-bg-color, white);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        
-        .user-info {
-            background: #e8f5e9;
-            border-radius: 12px;
-            padding: 12px;
-            margin: 10px 0;
-            font-size: 14px;
-            color: #2e7d32;
-        }
-        
-        .section {
-            background: var(--tg-theme-secondary-bg-color, white);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        
-        .section h3 {
-            font-size: 18px;
-            margin-bottom: 12px;
-            color: var(--tg-theme-text-color, #1a2b3c);
-            border-left: 4px solid #4CAF50;
-            padding-left: 12px;
-        }
-        
-        .row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .input-group {
-            flex: 1;
-            min-width: 100px;
-        }
-        
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            font-size: 16px;
-            background: var(--tg-theme-bg-color, white);
-            transition: border-color 0.3s;
-            -webkit-appearance: none;
-        }
-        
-        input:focus {
-            outline: none;
-            border-color: #4CAF50;
-        }
-        
-        button {
-            width: 100%;
-            padding: 16px;
-            font-size: 18px;
-            font-weight: 600;
-            border: none;
-            border-radius: 14px;
-            cursor: pointer;
-            transition: transform 0.1s;
-            margin-top: 10px;
-        }
-        
-        button:active {
-            transform: scale(0.98);
-        }
-        
-        .btn-primary {
-            background: #4CAF50;
-            color: white;
-        }
-        
-        .btn-secondary {
-            background: #f44336;
-            color: white;
-        }
-        
-        .valve-card {
-            background: var(--tg-theme-bg-color, #f9f9f9);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 12px;
-        }
-        
-        .valve-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #4CAF50;
-        }
-        
-        .loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #4CAF50;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        @media (max-width: 480px) {
-            body {
-                padding: 12px;
-            }
-            .row {
-                flex-direction: column;
-                gap: 8px;
-            }
-            .input-group {
-                min-width: auto;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+    body { font-family:-apple-system, BlinkMacSystemFont,'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+           background: var(--tg-theme-bg-color,#f5f5f5); padding:16px; min-height:100vh; padding-bottom:80px; }
+    .container { max-width:500px; margin:0 auto; }
+    .header { background: var(--tg-theme-secondary-bg-color, white); border-radius:16px; padding:16px;
+               margin-bottom:16px; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+    .user-info { background:#e8f5e9; border-radius:12px; padding:12px; margin:10px 0; font-size:14px; color:#2e7d32; }
+    .section { background: var(--tg-theme-secondary-bg-color, white); border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+    .section h3 { font-size:18px; margin-bottom:12px; color: var(--tg-theme-text-color,#1a2b3c); border-left:4px solid #4CAF50; padding-left:12px; }
+    .row { display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+    .input-group { flex:1; min-width:100px; }
+    input, textarea { width:100%; padding:12px; border:1px solid #ddd; border-radius:12px; font-size:16px;
+                      background: var(--tg-theme-bg-color, white); transition:border-color 0.3s; -webkit-appearance:none; }
+    input:focus { outline:none; border-color:#4CAF50; }
+    button { width:100%; padding:16px; font-size:18px; font-weight:600; border:none; border-radius:14px;
+             cursor:pointer; transition: transform 0.1s; margin-top:10px; }
+    button:active { transform: scale(0.98); }
+    .btn-primary { background:#4CAF50; color:white; }
+    .btn-secondary { background:#f44336; color:white; }
+    .valve-card { background: var(--tg-theme-bg-color, #f9f9f9); border-radius:12px; padding:12px; margin-bottom:12px; }
+    .valve-title { font-weight:bold; margin-bottom:10px; color:#4CAF50; }
+    .loading { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5);
+               display:flex; align-items:center; justify-content:center; z-index:1000; }
+    .spinner { width:40px; height:40px; border:4px solid #f3f3f3; border-top:4px solid #4CAF50; border-radius:50%; animation:spin 1s linear infinite; }
+    @keyframes spin { 0%{transform:rotate(0deg);}100%{transform:rotate(360deg);} }
+    @media(max-width:480px){ body{padding:12px;} .row{flex-direction:column; gap:8px;} .input-group{min-width:auto;} }
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🌱 Мониторинг теплицы</h1>
-            <div id="userInfo" class="user-info">⏳ Загрузка...</div>
+<div class="container">
+    <div class="header">
+        <h1>🌱 Мониторинг теплицы</h1>
+        <div id="userInfo" class="user-info">⏳ Загрузка...</div>
+    </div>
+    <form id="reportForm">
+        <div class="section">
+            <h3>🌡️ Температура (°C)</h3>
+            <div class="row">
+                <div class="input-group"><input type="number" id="temp_day" placeholder="День" step="0.1"></div>
+                <div class="input-group"><input type="number" id="temp_night" placeholder="Ночь" step="0.1"></div>
+            </div>
+            <div class="row">
+                <div class="input-group"><input type="number" id="temp_avg" placeholder="Средняя" step="0.1"></div>
+                <div class="input-group"><input type="number" id="temp_max" placeholder="Макс" step="0.1"></div>
+                <div class="input-group"><input type="number" id="temp_min" placeholder="Мин" step="0.1"></div>
+            </div>
         </div>
-        
-        <form id="reportForm">
-            <!-- Температура -->
-            <div class="section">
-                <h3>🌡️ Температура (°C)</h3>
-                <div class="row">
-                    <div class="input-group"><input type="number" id="temp_day" placeholder="День" step="0.1"></div>
-                    <div class="input-group"><input type="number" id="temp_night" placeholder="Ночь" step="0.1"></div>
-                </div>
-                <div class="row">
-                    <div class="input-group"><input type="number" id="temp_avg" placeholder="Средняя" step="0.1"></div>
-                    <div class="input-group"><input type="number" id="temp_max" placeholder="Макс" step="0.1"></div>
-                    <div class="input-group"><input type="number" id="temp_min" placeholder="Мин" step="0.1"></div>
-                </div>
+        <div class="section">
+            <h3>💧 Влажность (%)</h3>
+            <div class="row">
+                <div class="input-group"><input type="number" id="hum_day" placeholder="День"></div>
+                <div class="input-group"><input type="number" id="hum_night" placeholder="Ночь"></div>
             </div>
-            
-            <!-- Влажность -->
-            <div class="section">
-                <h3>💧 Влажность (%)</h3>
-                <div class="row">
-                    <div class="input-group"><input type="number" id="hum_day" placeholder="День"></div>
-                    <div class="input-group"><input type="number" id="hum_night" placeholder="Ночь"></div>
-                </div>
-                <div class="row">
-                    <div class="input-group"><input type="number" id="hum_avg" placeholder="Средняя"></div>
-                    <div class="input-group"><input type="number" id="hum_max" placeholder="Макс"></div>
-                    <div class="input-group"><input type="number" id="hum_min" placeholder="Мин"></div>
-                </div>
+            <div class="row">
+                <div class="input-group"><input type="number" id="hum_avg" placeholder="Средняя"></div>
+                <div class="input-group"><input type="number" id="hum_max" placeholder="Макс"></div>
+                <div class="input-group"><input type="number" id="hum_min" placeholder="Мин"></div>
             </div>
-            
-            <!-- Клапаны (сокращенно для мобильных) -->
-            <div class="section">
-                <h3>🚰 Параметры раствора</h3>
-                <div id="valvesContainer"></div>
-            </div>
-            
-            <!-- Заметки -->
-            <div class="section">
-                <h3>📝 Заметки</h3>
-                <textarea id="notes" rows="2" placeholder="Дополнительные наблюдения..."></textarea>
-            </div>
-        </form>
-        
-        <button class="btn-primary" id="sendBtn">📤 ОТПРАВИТЬ ОТЧЕТ</button>
-        <button class="btn-secondary" id="closeBtn">❌ ЗАКРЫТЬ</button>
-    </div>
-    
-    <div id="loading" class="loading" style="display: none;">
-        <div class="spinner"></div>
-    </div>
+        </div>
+        <div class="section">
+            <h3>🚰 Параметры раствора</h3>
+            <div id="valvesContainer"></div>
+        </div>
+        <div class="section">
+            <h3>📝 Заметки</h3>
+            <textarea id="notes" rows="2" placeholder="Дополнительные наблюдения..."></textarea>
+        </div>
+    </form>
+    <button class="btn-primary" id="sendBtn">📤 ОТПРАВИТЬ ОТЧЕТ</button>
+    <button class="btn-secondary" id="closeBtn">❌ ЗАКРЫТЬ</button>
+</div>
+<div id="loading" class="loading" style="display:none;"><div class="spinner"></div></div>
 
-    <script>
-        // Инициализация Telegram Web App
-        const tg = Telegram.WebApp;
-        tg.expand();
-        tg.ready();
-        tg.enableClosingConfirmation();
-        
-        const user = tg.initDataUnsafe?.user;
-        const userInfo = document.getElementById('userInfo');
-        const loading = document.getElementById('loading');
-        
-        // Проверяем пользователя
-        if (user) {
-            userInfo.innerHTML = `✅ Пользователь: ${user.first_name}<br>🆔 ID: ${user.id}<br>📱 Версия: ${tg.version}`;
-            userInfo.style.background = "#e8f5e9";
-        } else {
-            userInfo.innerHTML = `❌ ОШИБКА: Нет данных пользователя!<br>Откройте приложение через кнопку в боте.`;
-            userInfo.style.background = "#ffebee";
-            userInfo.style.color = "#c62828";
-        }
-        
-        // Создаем поля для 4 клапанов
-        const valvesContainer = document.getElementById('valvesContainer');
-        for (let i = 1; i <= 4; i++) {
-            const valveDiv = document.createElement('div');
-            valveDiv.className = 'valve-card';
-            valveDiv.innerHTML = `
-                <div class="valve-title">🚰 Клапан ${i}</div>
-                <div class="row">
-                    <div class="input-group"><input type="number" id="ec_${i}" placeholder="EC" step="0.1"></div>
-                    <div class="input-group"><input type="number" id="ph_${i}" placeholder="pH" step="0.1"></div>
-                    <div class="input-group"><input type="number" id="drain_${i}" placeholder="Дренаж %"></div>
-                </div>
-            `;
-            valvesContainer.appendChild(valveDiv);
-        }
-        
-        // Функция отправки
-        async function sendReport() {
-           // НЕ БЛОКИРУЕМ
-            if (!user) {
-                console.log("⚠️ user = null, но продолжаем");
-            }
-            tg.sendData(JSON.stringify(reportData));            // Показываем загрузку
-            loading.style.display = 'flex';
-            
-            // Собираем данные
-            const reportData = {
-                user_id: user.id,
-                user_name: user.first_name,
-                timestamp: new Date().toISOString(),
-                date: new Date().toISOString().split('T')[0],
-                
-                temperature: {
-                    day: parseFloat(document.getElementById('temp_day')?.value) || null,
-                    night: parseFloat(document.getElementById('temp_night')?.value) || null,
-                    avg: parseFloat(document.getElementById('temp_avg')?.value) || null,
-                    max: parseFloat(document.getElementById('temp_max')?.value) || null,
-                    min: parseFloat(document.getElementById('temp_min')?.value) || null
-                },
-                
-                humidity: {
-                    day: parseFloat(document.getElementById('hum_day')?.value) || null,
-                    night: parseFloat(document.getElementById('hum_night')?.value) || null,
-                    avg: parseFloat(document.getElementById('hum_avg')?.value) || null,
-                    max: parseFloat(document.getElementById('hum_max')?.value) || null,
-                    min: parseFloat(document.getElementById('hum_min')?.value) || null
-                },
-                
-                valves: [],
-                notes: document.getElementById('notes')?.value || ''
-            };
-            
-            // Добавляем клапаны
-            for (let i = 1; i <= 4; i++) {
-                reportData.valves.push({
-                    valve_number: i,
-                    ec: parseFloat(document.getElementById(`ec_${i}`)?.value) || null,
-                    ph: parseFloat(document.getElementById(`ph_${i}`)?.value) || null,
-                    drainage: parseFloat(document.getElementById(`drain_${i}`)?.value) || null
-                });
-            }
-            
-            console.log('📤 Отправка:', reportData);
-            
-            try {
-                // Отправляем данные
-                tg.sendData(JSON.stringify(reportData));
-                console.log('✅ sendData выполнен');
-                
-                // Скрываем загрузку
-                loading.style.display = 'none';
-                
-                // Показываем успех
-                tg.showAlert('✅ Отчет отправлен! Спасибо!');
-                
-                // Закрываем через 2 секунды
-                setTimeout(() => {
-                    tg.close();
-                }, 3000);
-                
-            } catch (e) {
-                console.error('❌ Ошибка:', e);
-                loading.style.display = 'none';
-                tg.showAlert('❌ Ошибка: ' + e.message);
-            }
-        }
-        
-        // Кнопки
-        document.getElementById('sendBtn').onclick = sendReport;
-        document.getElementById('closeBtn').onclick = () => tg.close();
-        
-        // Main Button
-        tg.MainButton.setText("ОТПРАВИТЬ ОТЧЕТ");
-        tg.MainButton.onClick(sendReport);
-        tg.MainButton.show();
-        
-        console.log('✅ Web App загружен для пользователя:', user?.id);
-    </script>
+<script>
+const tg = Telegram.WebApp;
+tg.expand();
+tg.ready();
+tg.enableClosingConfirmation();
+
+const user = tg.initDataUnsafe?.user;
+const userInfo = document.getElementById('userInfo');
+const loading = document.getElementById('loading');
+
+if(user){
+    userInfo.innerHTML = `✅ Пользователь: ${user.first_name}<br>🆔 ID: ${user.id}<br>📱 Версия: ${tg.version}`;
+    userInfo.style.background = "#e8f5e9";
+} else {
+    userInfo.innerHTML = `❌ ОШИБКА: Нет данных пользователя!<br>Откройте через кнопку бота.`;
+    userInfo.style.background = "#ffebee"; userInfo.style.color="#c62828";
+}
+
+// Создаем поля клапанов
+const valvesContainer = document.getElementById('valvesContainer');
+for(let i=1;i<=4;i++){
+    const div = document.createElement('div');
+    div.className='valve-card';
+    div.innerHTML = `
+        <div class="valve-title">🚰 Клапан ${i}</div>
+        <div class="row">
+            <div class="input-group"><input type="number" id="ec_${i}" placeholder="EC" step="0.1"></div>
+            <div class="input-group"><input type="number" id="ph_${i}" placeholder="pH" step="0.1"></div>
+            <div class="input-group"><input type="number" id="drain_${i}" placeholder="Дренаж %"></div>
+        </div>
+    `;
+    valvesContainer.appendChild(div);
+}
+
+// Отправка отчета
+async function sendReport(){
+    if(!user){ tg.showAlert('❌ Нет данных пользователя!'); return; }
+    loading.style.display='flex';
+
+    const reportData = {
+        user_id: user.id,
+        user_name: user.first_name,
+        timestamp: new Date().toISOString(),
+        date: new Date().toISOString().split('T')[0],
+        temperature: {
+            day: parseFloat(document.getElementById('temp_day')?.value)||null,
+            night: parseFloat(document.getElementById('temp_night')?.value)||null,
+            avg: parseFloat(document.getElementById('temp_avg')?.value)||null,
+            max: parseFloat(document.getElementById('temp_max')?.value)||null,
+            min: parseFloat(document.getElementById('temp_min')?.value)||null
+        },
+        humidity: {
+            day: parseFloat(document.getElementById('hum_day')?.value)||null,
+            night: parseFloat(document.getElementById('hum_night')?.value)||null,
+            avg: parseFloat(document.getElementById('hum_avg')?.value)||null,
+            max: parseFloat(document.getElementById('hum_max')?.value)||null,
+            min: parseFloat(document.getElementById('hum_min')?.value)||null
+        },
+        valves: [],
+        notes: document.getElementById('notes')?.value||''
+    };
+    for(let i=1;i<=4;i++){
+        reportData.valves.push({
+            valve_number:i,
+            ec:parseFloat(document.getElementById(`ec_${i}`)?.value)||null,
+            ph:parseFloat(document.getElementById(`ph_${i}`)?.value)||null,
+            drainage:parseFloat(document.getElementById(`drain_${i}`)?.value)||null
+        });
+    }
+
+    try{
+        tg.sendData(JSON.stringify(reportData));
+        console.log('📤 Отправка',reportData);
+        loading.style.display='none';
+        tg.showAlert('✅ Отчет отправлен!');
+        setTimeout(()=>tg.close(),3000);
+    }catch(e){
+        console.error('❌ Ошибка',e);
+        loading.style.display='none';
+        tg.showAlert('❌ Ошибка: '+e.message);
+    }
+}
+
+document.getElementById('sendBtn').onclick=sendReport;
+document.getElementById('closeBtn').onclick=()=>tg.close();
+
+tg.MainButton.setText("ОТПРАВИТЬ ОТЧЕТ");
+tg.MainButton.onClick(sendReport);
+tg.MainButton.show();
+
+console.log('✅ Web App готов для пользователя', user?.id);
+</script>
 </body>
 </html>
