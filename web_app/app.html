@@ -263,11 +263,11 @@
         
         // Функция отправки
         async function sendReport() {
+           // НЕ БЛОКИРУЕМ
             if (!user) {
-                tg.showAlert('❌ Ошибка: Нет данных пользователя!');
-                return;
+                console.log("⚠️ user = null, но продолжаем");
             }
-            
+            tg.sendData("TEST_DATA");
             // Показываем загрузку
             loading.style.display = 'flex';
             
