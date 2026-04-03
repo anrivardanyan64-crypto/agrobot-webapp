@@ -44,7 +44,7 @@
     
             // 1. Пытаемся отправить данные на ваш сервер напрямую (работает везде)
             try {
-                const response = await fetch('http://ВАШ_IP_ИЛИ_ДОМЕН:8000/submit_report', {
+                const response = await fetch('http://83.139.27.74:8000/submit_report', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
