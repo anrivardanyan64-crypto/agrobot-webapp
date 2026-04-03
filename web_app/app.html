@@ -31,20 +31,26 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
-        tg.expand();
-
-        document.getElementById('mainBtn').onclick = function() {
+    
+        document.getElementById('mainBtn').onclick = async function() {
             const user = tg.initDataUnsafe?.user;
-            
             const payload = {
-                user_name: user ? user.first_name : "Аноним",
+                user_id: user?.id,
+                user_name: user?.first_name || "User",
                 temp: { d: document.getElementById('td').value, n: document.getElementById('tn').value },
                 hum: { d: document.getElementById('hd').value, n: document.getElementById('hn').value },
                 notes: document.getElementById('notes').value
             };
-
-            // ЭТА ФУНКЦИЯ ОТПРАВЛЯЕТ ДАННЫЕ БОТУ
-            tg.sendData(JSON.stringify(payload));
+    
+            // Пытаемся отправить через sendData (для кнопок меню)
+            try {
+                tg.sendData(JSON.stringify(payload));
+            } catch (e) {
+                // Если sendData не сработал (например, открыто через кнопку в шапке бота)
+                // Здесь в идеале должен быть запрос на ваш сервер (API), 
+                // но для простоты убедитесь, что вы используете КНОПКУ МЕНЮ.
+                alert("Ошибка отправки. Пожалуйста, используйте кнопку в меню бота!");
+            }
         };
     </script>
 </body>
