@@ -1,39 +1,71 @@
-<script>
-    const tg = window.Telegram.WebApp;
-    tg.ready();
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; }
+        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 8px; }
+        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h3>🌡 Температура</h3>
+        <input type="number" id="td" placeholder="День">
+        <input type="number" id="tn" placeholder="Ночь">
+    </div>
+    <div class="card">
+        <h3>💧 Влажность</h3>
+        <input type="number" id="hd" placeholder="День">
+        <input type="number" id="hn" placeholder="Ночь">
+    </div>
+    <div class="card">
+        <h3>📝 Заметки</h3>
+        <input type="text" id="notes" placeholder="Дополнительно...">
+    </div>
+    <button id="mainBtn">ОТПРАВИТЬ В ГРУППУ</button>
 
-    document.getElementById('mainBtn').onclick = async function() {
-        const user = tg.initDataUnsafe?.user;
-        const payload = {
-            user_id: user?.id,
-            user_name: user?.first_name || "Пользователь",
-            temp: { d: document.getElementById('td').value, n: document.getElementById('tn').value },
-            hum: { d: document.getElementById('hd').value, n: document.getElementById('hn').value },
-            notes: document.getElementById('notes').value
-        };
-
-        // 1. Пытаемся отправить данные на ваш сервер напрямую (работает везде)
-        try {
-            const response = await fetch('http://ВАШ_IP_ИЛИ_ДОМЕН:8000/submit_report', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            
-            if (response.ok) {
-                tg.showAlert("✅ Отчет успешно отправлен через API!");
-                tg.close();
-                return;
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+    
+        document.getElementById('mainBtn').onclick = async function() {
+            const user = tg.initDataUnsafe?.user;
+            const payload = {
+                user_id: user?.id,
+                user_name: user?.first_name || "Пользователь",
+                temp: { d: document.getElementById('td').value, n: document.getElementById('tn').value },
+                hum: { d: document.getElementById('hd').value, n: document.getElementById('hn').value },
+                notes: document.getElementById('notes').value
+            };
+    
+            // 1. Пытаемся отправить данные на ваш сервер напрямую (работает везде)
+            try {
+                const response = await fetch('http://ВАШ_IP_ИЛИ_ДОМЕН:8000/submit_report', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    tg.showAlert("✅ Отчет успешно отправлен через API!");
+                    tg.close();
+                    return;
+                }
+            } catch (e) {
+                console.log("Сервер недоступен, пробуем стандартный метод...");
             }
-        } catch (e) {
-            console.log("Сервер недоступен, пробуем стандартный метод...");
-        }
-
-        // 2. Если сервер недоступен, пробуем стандартный sendData (только для кнопок меню)
-        try {
-            tg.sendData(JSON.stringify(payload));
-        } catch (e) {
-            alert("Ошибка: Используйте кнопку в меню бота!");
-        }
-    };
-</script>
+    
+            // 2. Если сервер недоступен, пробуем стандартный sendData (только для кнопок меню)
+            try {
+                tg.sendData(JSON.stringify(payload));
+            } catch (e) {
+                alert("Ошибка: Используйте кнопку в меню бота!");
+            }
+        };
+    </script>
+</body>
+</html>
