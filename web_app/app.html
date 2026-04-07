@@ -114,20 +114,21 @@
 
         // 3. Функция отправки
         document.getElementById('sendBtn').onclick = function() {
-            if (!tg.initDataUnsafe?.user) {
-                alert("Ошибка: Запустите приложение через кнопку в боте Telegram!");
+            // Проверяем, что это Telegram WebApp
+            if (!window.Telegram || !window.Telegram.WebApp) {
+                alert("Откройте форму внутри Telegram.");
                 return;
             }
-
+            // Не блокируем по initDataUnsafe.user
+            const user = tg.initDataUnsafe?.user || {};
             const data = {
-                user_name: tg.initDataUnsafe.user.first_name,
-                user_id: tg.initDataUnsafe.user.id,
+                user_name: user.first_name || "Unknown",
+                user_id: user.id || null,
                 temp: { d: document.getElementById('t_day').value, n: document.getElementById('t_night').value },
                 hum: { d: document.getElementById('h_day').value, n: document.getElementById('h_night').value },
                 valves: [],
                 notes: document.getElementById('notes').value
             };
-
             for (let i = 1; i <= 4; i++) {
                 data.valves.push({
                     id: i,
@@ -136,11 +137,8 @@
                     dr: document.getElementById(`dr_${i}`).value
                 });
             }
-
             tg.sendData(JSON.stringify(data));
         };
-
-        document.getElementById('closeBtn').onclick = () => tg.close();
     </script>
 </body>
 </html>
