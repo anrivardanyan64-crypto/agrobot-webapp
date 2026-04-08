@@ -1,30 +1,20 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>AgroBot Monitoring | Полный климат + Динамические клапаны</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, system-ui, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            font-family: -apple-system, system-ui, "Segoe UI", Roboto, Helvetica, sans-serif;
             background: var(--tg-theme-bg-color, #f5f7fb);
             color: var(--tg-theme-text-color, #1e2a3e);
             padding: 16px;
             padding-bottom: 90px;
         }
-
-        .container {
-            max-width: 550px;
-            margin: 0 auto;
-        }
-
+        .container { max-width: 550px; margin: 0 auto; }
         .header {
             background: var(--tg-theme-secondary-bg-color, #ffffff);
             border-radius: 24px;
@@ -34,7 +24,6 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
             border: 1px solid rgba(0, 0, 0, 0.03);
         }
-
         .user-info {
             background: #e9f7eb;
             border-radius: 40px;
@@ -45,7 +34,6 @@
             color: #1e6f2f;
             display: inline-block;
         }
-
         .section {
             background: var(--tg-theme-secondary-bg-color, #ffffff);
             border-radius: 24px;
@@ -53,9 +41,7 @@
             margin-bottom: 18px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
             border: 1px solid rgba(0, 0, 0, 0.04);
-            transition: all 0.2s;
         }
-
         .section h3 {
             font-size: 18px;
             font-weight: 600;
@@ -66,32 +52,9 @@
             align-items: center;
             gap: 8px;
         }
-
-        .param-group {
-            margin-bottom: 20px;
-        }
-
-        .param-label {
-            font-weight: 600;
-            font-size: 15px;
-            margin-bottom: 10px;
-            color: #2c6e2f;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .param-grid {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .param-grid input {
-            flex: 1;
-            min-width: 90px;
-        }
-
+        .param-group { margin-bottom: 20px; }
+        .param-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+        .param-grid input { flex: 1; min-width: 90px; }
         input, textarea {
             width: 100%;
             padding: 12px 14px;
@@ -100,37 +63,15 @@
             font-size: 15px;
             background: var(--tg-theme-bg-color, #ffffff);
             color: var(--tg-theme-text-color, #0f2b3d);
-            transition: 0.2s;
             font-weight: 500;
         }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: #4caf50;
-            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
-        }
-
         .valve-card {
             background: rgba(76, 175, 80, 0.04);
             border-radius: 20px;
             padding: 14px;
             margin-bottom: 14px;
             border-left: 3px solid #4caf50;
-            transition: all 0.2s ease;
-            animation: fadeInUp 0.2s ease;
         }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         .valve-title {
             font-weight: 700;
             color: #2c6e2f;
@@ -140,7 +81,6 @@
             align-items: center;
             gap: 8px;
         }
-
         .badge-valve {
             background: #4caf50;
             color: white;
@@ -148,7 +88,6 @@
             padding: 2px 10px;
             font-size: 12px;
         }
-
         button {
             width: 100%;
             padding: 15px;
@@ -158,51 +97,10 @@
             font-weight: 600;
             cursor: pointer;
             margin-top: 12px;
-            transition: all 0.2s ease;
         }
-
-        .btn-primary {
-            background: #4caf50;
-            color: white;
-            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
-        }
-
-        .btn-primary:active {
-            transform: scale(0.97);
-            background: #3e9a41;
-        }
-
-        .btn-secondary {
-            background: #94a3b8;
-            color: white;
-        }
-
-        .btn-secondary:active {
-            background: #7e8c9f;
-            transform: scale(0.97);
-        }
-
-        .btn-add-valve {
-            background: #4caf50;
-            color: white;
-            margin-top: 8px;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-add-valve:active {
-            transform: scale(0.98);
-        }
-
-        .btn-add-valve:disabled {
-            background: #b9d8bb;
-            cursor: not-allowed;
-            transform: none;
-        }
-
+        .btn-primary { background: #4caf50; color: white; }
+        .btn-secondary { background: #94a3b8; color: white; }
+        .btn-add-valve { background: #4caf50; color: white; margin-top: 8px; margin-bottom: 8px; }
         .valves-header {
             display: flex;
             justify-content: space-between;
@@ -210,7 +108,6 @@
             flex-wrap: wrap;
             margin-bottom: 12px;
         }
-
         .valve-counter {
             font-size: 13px;
             background: #eef2ff;
@@ -218,25 +115,7 @@
             border-radius: 30px;
             color: #2c6e2f;
         }
-
-        .small-hint {
-            font-size: 12px;
-            color: #6c7a91;
-            margin-top: 8px;
-            text-align: center;
-        }
-
-        .climate-section {
-            background: rgba(76, 175, 80, 0.02);
-        }
-
-        .subtitle {
-            font-size: 13px;
-            color: #6b7280;
-            margin-top: -8px;
-            margin-bottom: 12px;
-            padding-left: 12px;
-        }
+        .small-hint { font-size: 12px; color: #6c7a91; margin-top: 8px; text-align: center; }
     </style>
 </head>
 <body>
@@ -247,8 +126,7 @@
         <div class="small-hint" style="margin-top: 10px;">📊 5 параметров: день | ночь | средняя | мин | макс</div>
     </div>
 
-    <!-- ТЕМПЕРАТУРА: 5 полей -->
-    <div class="section climate-section">
+    <div class="section">
         <h3>🌡️ Температура (°C)</h3>
         <div class="param-group">
             <div class="param-grid">
@@ -261,8 +139,7 @@
         </div>
     </div>
 
-    <!-- ВЛАЖНОСТЬ: 5 полей -->
-    <div class="section climate-section">
+    <div class="section">
         <h3>💧 Влажность (%)</h3>
         <div class="param-group">
             <div class="param-grid">
@@ -273,101 +150,198 @@
                 <input type="number" id="hum_max" placeholder="Макс" step="0.1">
             </div>
         </div>
-        <div class="subtitle">* дневная/ночная влажность + общая статистика</div>
     </div>
 
-    <!-- БЛОК КЛАПАНОВ с динамическим добавлением (3 → 10) -->
     <div class="section" id="valvesMainSection">
         <div class="valves-header">
             <h3 style="border-left: none; padding-left: 0; margin-bottom: 0;">🚿 Система клапанов</h3>
             <span class="valve-counter" id="valveCounter">3 / 10</span>
         </div>
-        <div id="valvesContainer">
-            <!-- сюда динамически рендерятся клапаны -->
-        </div>
-        <button id="addValveBtn" class="btn-add-valve">➕ Добавить клапан +</button>
-        <div class="small-hint">Минимум 3, максимум 10. Нажимай «+», чтобы добавить до 10 клапанов</div>
+        <div id="valvesContainer"></div>
+        <button id="addValveBtn" class="btn-add-valve" type="button">➕ Добавить клапан +</button>
+        <div class="small-hint">Минимум 3, максимум 10</div>
     </div>
 
-    <!-- Заметки -->
     <div class="section">
         <h3>📝 Журнал наблюдений</h3>
-        <textarea id="notes" rows="2" placeholder="Заметки: проблемы, полив, рекомендации, особые отметки..."></textarea>
+        <textarea id="notes" rows="2" placeholder="Заметки..."></textarea>
     </div>
 
-    <!-- Кнопки действий -->
-    <button class="btn-primary" id="sendBtn">📤 ОТПРАВИТЬ ОТЧЕТ</button>
-    <button class="btn-secondary" id="closeBtn">🔒 ЗАКРЫТЬ</button>
-    <div class="small-hint" style="margin-top: 12px;">* Отчет отправляется боту. Все данные по климату (5 параметров) и клапанам (до 10)</div>
+    <button class="btn-primary" id="sendBtn" type="button">📤 ОТПРАВИТЬ ОТЧЕТ</button>
+    <button class="btn-secondary" id="closeBtn" type="button">🔒 ЗАКРЫТЬ</button>
 </div>
 
 <script>
+    const tg = window.Telegram?.WebApp;
+    if (!tg) {
+        alert("Откройте страницу из Telegram-бота.");
+    } else {
+        tg.ready();
+        tg.expand();
+    }
+
+    const userInfoDiv = document.getElementById("userInfo");
+    const user = tg?.initDataUnsafe?.user;
+    if (user && user.first_name) {
+        userInfoDiv.innerHTML = `✅ ${user.first_name} ${user.last_name || ""} · ID: ${user.id || "—"}`;
+    } else {
+        userInfoDiv.innerHTML = "⚠️ Откройте через бота Telegram";
+        userInfoDiv.style.background = "#fff2e0";
+        userInfoDiv.style.color = "#b85c00";
+    }
+
     let currentValvesCount = 3;
     const MAX_VALVES = 10;
-    const valvesContainer = document.getElementById('valvesContainer');
-    const addBtn = document.getElementById('addValveBtn');
-    const valveCounterSpan = document.getElementById('valveCounter');
+    const valvesContainer = document.getElementById("valvesContainer");
+    const addBtn = document.getElementById("addValveBtn");
+    const valveCounterSpan = document.getElementById("valveCounter");
+
     function createValveCard(valveNumber) {
-        const card = document.createElement('div');
-        card.className = 'valve-card';
-        card.setAttribute('data-valve-id', valveNumber);
+        const card = document.createElement("div");
+        card.className = "valve-card";
         card.innerHTML = `
             <div class="valve-title">
                 <span class="badge-valve">🚰 Клапан ${valveNumber}</span>
                 <span style="font-size:13px; font-weight:normal;">EC | pH | Дренаж%</span>
             </div>
-            <div class="row" style="display:flex; gap:10px;">
-                <input type="number" id="ec_${valveNumber}" placeholder="EC, мСм/см" step="0.1">
+            <div style="display:flex; gap:10px;">
+                <input type="number" id="ec_${valveNumber}" placeholder="EC" step="0.1">
                 <input type="number" id="ph_${valveNumber}" placeholder="pH" step="0.1">
-                <input type="number" id="dr_${valveNumber}" placeholder="Дренаж, %" step="0.1">
+                <input type="number" id="dr_${valveNumber}" placeholder="Дренаж %" step="0.1">
             </div>
         `;
         return card;
     }
+
     function snapshotValveValues() {
         const values = {};
         for (let i = 1; i <= currentValvesCount; i++) {
             values[i] = {
-                ec: document.getElementById(`ec_${i}`)?.value || '',
-                ph: document.getElementById(`ph_${i}`)?.value || '',
-                dr: document.getElementById(`dr_${i}`)?.value || ''
+                ec: document.getElementById(`ec_${i}`)?.value || "",
+                ph: document.getElementById(`ph_${i}`)?.value || "",
+                dr: document.getElementById(`dr_${i}`)?.value || ""
             };
         }
         return values;
     }
+
     function restoreValveValues(values) {
         Object.keys(values).forEach((key) => {
             const i = Number(key);
-            const saved = values[i] || {};
+            const v = values[i] || {};
             const ec = document.getElementById(`ec_${i}`);
             const ph = document.getElementById(`ph_${i}`);
             const dr = document.getElementById(`dr_${i}`);
-            if (ec) ec.value = saved.ec || '';
-            if (ph) ph.value = saved.ph || '';
-            if (dr) dr.value = saved.dr || '';
+            if (ec) ec.value = v.ec || "";
+            if (ph) ph.value = v.ph || "";
+            if (dr) dr.value = v.dr || "";
         });
     }
+
     function renderValves() {
-        const savedValues = snapshotValveValues(); // <-- сохраняем до очистки
-        valvesContainer.innerHTML = '';
+        const savedValues = snapshotValveValues(); // сохраняем то, что уже введено
+
+        valvesContainer.innerHTML = "";
         for (let i = 1; i <= currentValvesCount; i++) {
             valvesContainer.appendChild(createValveCard(i));
         }
-        restoreValveValues(savedValues); // <-- восстанавливаем после перерисовки
+
+        restoreValveValues(savedValues); // восстанавливаем после перерисовки
+
         valveCounterSpan.innerText = `${currentValvesCount} / ${MAX_VALVES}`;
-        addBtn.disabled = currentValvesCount >= MAX_VALVES;
-        addBtn.innerText = currentValvesCount >= MAX_VALVES
-            ? '❌ Достигнут максимум (10 клапанов)'
-            : '➕ Добавить клапан +';
+        if (currentValvesCount >= MAX_VALVES) {
+            addBtn.disabled = true;
+            addBtn.innerText = "❌ Достигнут максимум (10)";
+        } else {
+            addBtn.disabled = false;
+            addBtn.innerText = "➕ Добавить клапан +";
+        }
     }
+
     function addValve() {
         if (currentValvesCount < MAX_VALVES) {
             currentValvesCount++;
             renderValves();
         }
     }
+
+    addBtn.addEventListener("click", addValve);
     renderValves();
-    addBtn.addEventListener('click', addValve);
+
+    function collectClimateData() {
+        return {
+            temperature: {
+                day: document.getElementById("temp_day")?.value || "",
+                night: document.getElementById("temp_night")?.value || "",
+                avg: document.getElementById("temp_avg")?.value || "",
+                min: document.getElementById("temp_min")?.value || "",
+                max: document.getElementById("temp_max")?.value || ""
+            },
+            humidity: {
+                day: document.getElementById("hum_day")?.value || "",
+                night: document.getElementById("hum_night")?.value || "",
+                avg: document.getElementById("hum_avg")?.value || "",
+                min: document.getElementById("hum_min")?.value || "",
+                max: document.getElementById("hum_max")?.value || ""
+            }
+        };
+    }
+
+    function collectValvesData() {
+        const valves = [];
+        for (let i = 1; i <= currentValvesCount; i++) {
+            valves.push({
+                id: i,
+                ec: document.getElementById(`ec_${i}`)?.value || "",
+                ph: document.getElementById(`ph_${i}`)?.value || "",
+                drain_percent: document.getElementById(`dr_${i}`)?.value || ""
+            });
+        }
+        return valves;
+    }
+
+    document.getElementById("sendBtn").onclick = function () {
+        if (!tg) {
+            alert("Откройте форму внутри Telegram.");
+            return;
+        }
+
+        const currentUser = tg.initDataUnsafe?.user || {};
+        const climateData = collectClimateData();
+        const valvesData = collectValvesData();
+
+        const payload = {
+            version: "4.1",
+            timestamp: new Date().toISOString(),
+            init_data: tg.initData || "",
+            user: {
+                id: currentUser.id || null,
+                name: `${currentUser.first_name || "Гость"} ${currentUser.last_name || ""}`.trim(),
+                username: currentUser.username || null,
+                raw: currentUser
+            },
+            climate: {
+                temperature: climateData.temperature,
+                humidity: climateData.humidity
+            },
+            valves: valvesData,
+            total_valves_count: currentValvesCount,
+            notes: document.getElementById("notes").value || ""
+        };
+
+        try {
+            tg.sendData(JSON.stringify(payload));
+            tg.HapticFeedback?.notificationOccurred?.("success");
+            setTimeout(() => tg.close(), 300);
+        } catch (e) {
+            console.error(e);
+            alert("❌ Не удалось отправить отчет.");
+        }
+    };
+
+    document.getElementById("closeBtn").onclick = () => {
+        if (tg?.close) tg.close();
+    };
 </script>
 </body>
 </html>
