@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AgroBot Monitoring | 10 клапанов</title>
+    <title>AgroBot Monitoring | Динамические клапаны</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -25,7 +25,6 @@
             margin: 0 auto;
         }
 
-        /* карточки и блоки */
         .header {
             background: var(--tg-theme-secondary-bg-color, #ffffff);
             border-radius: 24px;
@@ -45,7 +44,6 @@
             font-weight: 500;
             color: #1e6f2f;
             display: inline-block;
-            backdrop-filter: blur(2px);
         }
 
         .section {
@@ -99,12 +97,55 @@
             box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
         }
 
+        .climate-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .climate-block {
+            background: rgba(76, 175, 80, 0.05);
+            border-radius: 20px;
+            padding: 12px;
+        }
+
+        .climate-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #2c6e2f;
+            font-size: 15px;
+        }
+
+        .triple-input {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .triple-input input {
+            flex: 1;
+            min-width: 80px;
+        }
+
         .valve-card {
             background: rgba(76, 175, 80, 0.04);
             border-radius: 20px;
             padding: 14px;
             margin-bottom: 14px;
             border-left: 3px solid #4caf50;
+            transition: all 0.2s ease;
+            animation: fadeInUp 0.2s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .valve-title {
@@ -135,8 +176,6 @@
             cursor: pointer;
             margin-top: 12px;
             transition: all 0.2s ease;
-            background: var(--tg-theme-button-color, #4caf50);
-            color: var(--tg-theme-button-text-color, white);
         }
 
         .btn-primary {
@@ -153,7 +192,6 @@
         .btn-secondary {
             background: #94a3b8;
             color: white;
-            box-shadow: none;
         }
 
         .btn-secondary:active {
@@ -161,36 +199,41 @@
             transform: scale(0.97);
         }
 
-        .btn-show-more {
-            background: #f0f2f5;
-            color: #2c3e50;
-            border: 1px solid #cbd5e1;
-            margin-top: 6px;
-            margin-bottom: 16px;
-            font-weight: 600;
+        .btn-add-valve {
+            background: #4caf50;
+            color: white;
+            margin-top: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .btn-show-more:active {
-            background: #e2e8f0;
+        .btn-add-valve:active {
+            transform: scale(0.98);
         }
 
-        .hidden-valves {
-            display: none;
+        .btn-add-valve:disabled {
+            background: #b9d8bb;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        .show-all {
-            display: block;
+        .valves-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
         }
 
-        .note-textarea {
-            resize: vertical;
-        }
-
-        hr {
-            margin: 16px 0;
-            border: none;
-            height: 1px;
-            background: #e2e8f0;
+        .valve-counter {
+            font-size: 13px;
+            background: #eef2ff;
+            padding: 4px 12px;
+            border-radius: 30px;
+            color: #2c6e2f;
         }
 
         .small-hint {
@@ -199,48 +242,91 @@
             margin-top: 8px;
             text-align: center;
         }
+
+        hr {
+            margin: 16px 0;
+            border: none;
+            height: 1px;
+            background: #e2e8f0;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <h1>🌾 Агро Мониторинг PRO</h1>
+        <h1>🌾 Агро Мониторинг PRO+</h1>
         <div id="userInfo" class="user-info">⏳ Авторизация через Telegram...</div>
-        <div class="small-hint" style="margin-top: 10px;">🚰 10 клапанов · EC / pH / Дренаж</div>
+        <div class="small-hint" style="margin-top: 10px;">🚰 Клапаны: 3 → 10 (добавляй по одному)</div>
     </div>
 
-    <!-- Блок температуры и влажности -->
+    <!-- РАСШИРЕННЫЙ БЛОК КЛИМАТА: день/ночь + средняя/мин/макс -->
     <div class="section">
-        <h3>🌡️ Климат</h3>
-        <div class="row">
-            <input type="number" id="t_day" placeholder="Температура день, °C" step="0.1">
-            <input type="number" id="t_night" placeholder="Температура ночь, °C" step="0.1">
-        </div>
-        <div class="row">
-            <input type="number" id="h_day" placeholder="Влажность день, %">
-            <input type="number" id="h_night" placeholder="Влажность ночь, %">
+        <h3>🌡️ Температура (°C)</h3>
+        <div class="climate-grid">
+            <div class="climate-block">
+                <div class="climate-title">☀️ ДЕНЬ</div>
+                <div class="triple-input">
+                    <input type="number" id="t_day_avg" placeholder="Средняя" step="0.1">
+                    <input type="number" id="t_day_min" placeholder="Мин" step="0.1">
+                    <input type="number" id="t_day_max" placeholder="Макс" step="0.1">
+                </div>
+            </div>
+            <div class="climate-block">
+                <div class="climate-title">🌙 НОЧЬ</div>
+                <div class="triple-input">
+                    <input type="number" id="t_night_avg" placeholder="Средняя" step="0.1">
+                    <input type="number" id="t_night_min" placeholder="Мин" step="0.1">
+                    <input type="number" id="t_night_max" placeholder="Макс" step="0.1">
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- КОНТЕЙНЕР ДЛЯ ВСЕХ 10 КЛАПАНОВ (динамическая генерация) -->
-    <div id="valvesWrapper" class="section" style="padding-bottom: 8px;">
-        <h3>🚿 Система клапанов (10 шт)</h3>
-        <div id="valvesList"></div>
-        <!-- Кнопка показать/скрыть дополнительные клапаны -->
-        <button id="toggleValvesBtn" class="btn-show-more">➕ Показать все 10 клапанов</button>
-        <div class="small-hint">Первые 3 клапана всегда видны, остальные — по нажатию</div>
+    <div class="section">
+        <h3>💧 Влажность (%)</h3>
+        <div class="climate-grid">
+            <div class="climate-block">
+                <div class="climate-title">☀️ ДЕНЬ</div>
+                <div class="triple-input">
+                    <input type="number" id="h_day_avg" placeholder="Средняя">
+                    <input type="number" id="h_day_min" placeholder="Мин">
+                    <input type="number" id="h_day_max" placeholder="Макс">
+                </div>
+            </div>
+            <div class="climate-block">
+                <div class="climate-title">🌙 НОЧЬ</div>
+                <div class="triple-input">
+                    <input type="number" id="h_night_avg" placeholder="Средняя">
+                    <input type="number" id="h_night_min" placeholder="Мин">
+                    <input type="number" id="h_night_max" placeholder="Макс">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- БЛОК КЛАПАНОВ с динамическим добавлением -->
+    <div class="section" id="valvesMainSection">
+        <div class="valves-header">
+            <h3 style="border-left: none; padding-left: 0; margin-bottom: 0;">🚿 Клапаны</h3>
+            <span class="valve-counter" id="valveCounter">3 / 10</span>
+        </div>
+        <div id="valvesContainer">
+            <!-- сюда динамически будут рендериться клапаны -->
+        </div>
+        <button id="addValveBtn" class="btn-add-valve">➕ Добавить клапан +</button>
+        <div class="small-hint">Минимум 3, максимум 10. Нажимай "+", чтобы добавить до 10</div>
     </div>
 
     <!-- Заметки -->
     <div class="section">
         <h3>📝 Журнал наблюдений</h3>
-        <textarea id="notes" rows="2" class="note-textarea" placeholder="Доп. информация, проблемы, полив..."></textarea>
+        <textarea id="notes" rows="2" placeholder="Доп. информация, проблемы, полив, замечания..."></textarea>
     </div>
 
     <!-- Кнопки действий -->
-    <button class="btn-primary" id="sendBtn">📤 ОТПРАВИТЬ ОТЧЕТ →</button>
+    <button class="btn-primary" id="sendBtn">📤 ОТПРАВИТЬ ОТЧЕТ</button>
     <button class="btn-secondary" id="closeBtn">🔒 ЗАКРЫТЬ</button>
-    <div class="small-hint" style="margin-top: 12px;">* Данные отправляются боту через Telegram WebApp</div>
+    <div class="small-hint" style="margin-top: 12px;">* Отчет отправляется боту. Все данные по климату и клапанам (до 10)</div>
 </div>
 
 <script>
@@ -248,30 +334,32 @@
     tg.expand();
     tg.ready();
 
-    // ----- 1. Отображение пользователя -----
+    // ---- Пользователь ----
     const userInfoDiv = document.getElementById('userInfo');
     const user = tg.initDataUnsafe?.user;
     if (user && user.first_name) {
-        userInfoDiv.innerHTML = `✅ Добро пожаловать, ${user.first_name} ${user.last_name || ''} · ID: ${user.id || '—'}`;
+        userInfoDiv.innerHTML = `✅ ${user.first_name} ${user.last_name || ''} · ID: ${user.id || '—'}`;
         userInfoDiv.style.background = "#e0f2e9";
-        userInfoDiv.style.color = "#1e6f2f";
     } else {
-        userInfoDiv.innerHTML = `⚠️ Откройте через кнопку бота Telegram! \n(авто-идентификация)`;
+        userInfoDiv.innerHTML = `⚠️ Откройте через бота Telegram`;
         userInfoDiv.style.background = "#fff2e0";
         userInfoDiv.style.color = "#b85c00";
     }
 
-    // ----- 2. Генерация 10 клапанов с ID 1..10 -----
-    const valvesListDiv = document.getElementById('valvesList');
-    let allValveElements = [];   // массив DOM-элементов каждого клапана (card)
-    let extraValvesStartIdx = 3; // с какого индекса прячем (0-based: 0,1,2 - видимые, 3..9 - скрытые)
+    // ---- Управление клапанами: старт с 3, макс 10 ----
+    let currentValvesCount = 3;
+    const MAX_VALVES = 10;
+    const MIN_VALVES = 3;
 
-    // Функция создания одного блока клапана (возвращает HTMLElement)
+    const valvesContainer = document.getElementById('valvesContainer');
+    const addBtn = document.getElementById('addValveBtn');
+    const valveCounterSpan = document.getElementById('valveCounter');
+
+    // Функция создания карточки клапана (номер)
     function createValveCard(valveNumber) {
         const card = document.createElement('div');
         card.className = 'valve-card';
         card.setAttribute('data-valve-id', valveNumber);
-        // уникальные id для полей
         const ecId = `ec_${valveNumber}`;
         const phId = `ph_${valveNumber}`;
         const drId = `dr_${valveNumber}`;
@@ -279,132 +367,162 @@
         card.innerHTML = `
             <div class="valve-title">
                 <span class="badge-valve">🚰 Клапан ${valveNumber}</span>
-                <span style="font-size:13px; font-weight:normal;">EC/pH/дренаж</span>
+                <span style="font-size:13px; font-weight:normal;">EC | pH | Дренаж%</span>
             </div>
             <div class="row">
-                <input type="number" id="${ecId}" placeholder="EC, мСм/см" step="0.1" value="">
-                <input type="number" id="${phId}" placeholder="pH" step="0.1" value="">
-                <input type="number" id="${drId}" placeholder="Дренаж, %" step="0.1" value="">
+                <input type="number" id="${ecId}" placeholder="EC, мСм/см" step="0.1">
+                <input type="number" id="${phId}" placeholder="pH" step="0.1">
+                <input type="number" id="${drId}" placeholder="Дренаж, %" step="0.1">
             </div>
         `;
         return card;
     }
 
-    // Генерируем все 10 клапанов и сохраняем в массив
-    for (let i = 1; i <= 10; i++) {
-        const valveCard = createValveCard(i);
-        valvesListDiv.appendChild(valveCard);
-        allValveElements.push(valveCard);
-    }
-
-    // ----- 3. Логика отображения: первые 3 всегда видны, остальные скрыты по умолчанию -----
-    // (индексы 0,1,2 — видимые; индексы 3..9 — скрыты)
-    let extraVisible = false; // флаг показывать ли дополнительные 7 клапанов
-
-    function updateValvesVisibility() {
-        for (let idx = 0; idx < allValveElements.length; idx++) {
-            const card = allValveElements[idx];
-            if (idx < 3) {
-                // первые три клапана всегда видны (независимо от флага)
-                card.style.display = 'block';
-            } else {
-                // остальные 7 клапанов (индекс 3..9) показываем только если extraVisible === true
-                card.style.display = extraVisible ? 'block' : 'none';
-            }
+    // Полная перерисовка клапанов (синхронизация с currentValvesCount)
+    function renderValves() {
+        valvesContainer.innerHTML = '';
+        for (let i = 1; i <= currentValvesCount; i++) {
+            const card = createValveCard(i);
+            valvesContainer.appendChild(card);
         }
-        // меняем текст кнопки
-        const toggleBtn = document.getElementById('toggleValvesBtn');
-        if (extraVisible) {
-            toggleBtn.innerHTML = '🔽 Скрыть дополнительные клапаны (4-10)';
-            toggleBtn.style.background = "#e9ecef";
+        valveCounterSpan.innerText = `${currentValvesCount} / ${MAX_VALVES}`;
+        // управление кнопкой: если достигнут максимум - блокируем
+        if (currentValvesCount >= MAX_VALVES) {
+            addBtn.disabled = true;
+            addBtn.style.opacity = '0.6';
+            addBtn.style.cursor = 'not-allowed';
+            addBtn.innerText = '❌ Максимум 10 клапанов';
         } else {
-            toggleBtn.innerHTML = '➕ Показать все 10 клапанов (4–10)';
-            toggleBtn.style.background = "#f0f2f5";
+            addBtn.disabled = false;
+            addBtn.style.opacity = '1';
+            addBtn.innerText = '➕ Добавить клапан +';
         }
     }
 
-    // начальное состояние: только первые три видны, остальные скрыты
-    extraVisible = false;
-    updateValvesVisibility();
-
-    // Вешаем обработчик на кнопку переключения
-    const toggleBtn = document.getElementById('toggleValvesBtn');
-    toggleBtn.addEventListener('click', () => {
-        extraVisible = !extraVisible;
-        updateValvesVisibility();
-        // плавный скролл если открыли, но не агрессивно
-        if (extraVisible) {
+    // Добавить один клапан (если меньше 10)
+    function addValve() {
+        if (currentValvesCount < MAX_VALVES) {
+            currentValvesCount++;
+            renderValves();
+            // плавный скролл к новому клапану
             setTimeout(() => {
-                const lastVisibleCard = allValveElements[allValveElements.length - 1];
-                if (lastVisibleCard && lastVisibleCard.getBoundingClientRect().bottom > window.innerHeight) {
-                    lastVisibleCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                const lastCard = valvesContainer.lastChild;
+                if (lastCard) {
+                    lastCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }, 50);
         }
-    });
+    }
 
-    // ----- 4. Сбор данных и отправка отчета (включая все 10 клапанов даже скрытых) -----
+    // Инициализация: рисуем 3 клапана
+    renderValves();
+    addBtn.addEventListener('click', addValve);
+
+    // ---- Сбор данных и отправка (средняя/мин/макс + все клапаны) ----
+    function collectClimateData() {
+        return {
+            temperature: {
+                day: {
+                    avg: document.getElementById('t_day_avg').value || '',
+                    min: document.getElementById('t_day_min').value || '',
+                    max: document.getElementById('t_day_max').value || ''
+                },
+                night: {
+                    avg: document.getElementById('t_night_avg').value || '',
+                    min: document.getElementById('t_night_min').value || '',
+                    max: document.getElementById('t_night_max').value || ''
+                }
+            },
+            humidity: {
+                day: {
+                    avg: document.getElementById('h_day_avg').value || '',
+                    min: document.getElementById('h_day_min').value || '',
+                    max: document.getElementById('h_day_max').value || ''
+                },
+                night: {
+                    avg: document.getElementById('h_night_avg').value || '',
+                    min: document.getElementById('h_night_min').value || '',
+                    max: document.getElementById('h_night_max').value || ''
+                }
+            }
+        };
+    }
+
+    function collectValvesData() {
+        const valvesArray = [];
+        for (let i = 1; i <= currentValvesCount; i++) {
+            const ecInput = document.getElementById(`ec_${i}`);
+            const phInput = document.getElementById(`ph_${i}`);
+            const drInput = document.getElementById(`dr_${i}`);
+            valvesArray.push({
+                id: i,
+                ec: ecInput ? ecInput.value : '',
+                ph: phInput ? phInput.value : '',
+                drain_percent: drInput ? drInput.value : ''
+            });
+        }
+        return valvesArray;
+    }
+
+    function checkIfAnyDataFilled() {
+        // Проверяем климат
+        const climate = collectClimateData();
+        const hasClimate = 
+            climate.temperature.day.avg || climate.temperature.day.min || climate.temperature.day.max ||
+            climate.temperature.night.avg || climate.temperature.night.min || climate.temperature.night.max ||
+            climate.humidity.day.avg || climate.humidity.day.min || climate.humidity.day.max ||
+            climate.humidity.night.avg || climate.humidity.night.min || climate.humidity.night.max;
+        
+        const valves = collectValvesData();
+        const hasValveData = valves.some(v => v.ec || v.ph || v.drain_percent);
+        const notes = document.getElementById('notes').value;
+        const hasNotes = notes.trim().length > 0;
+        
+        return hasClimate || hasValveData || hasNotes;
+    }
+
+    // Отправка отчета
     document.getElementById('sendBtn').onclick = function() {
-        // Проверяем, что мы в Telegram окружении (опционально)
         if (!window.Telegram || !window.Telegram.WebApp) {
-            alert("⚠️ Форма работает только внутри Telegram WebApp.\nОткройте через бота.");
+            alert("Откройте форму внутри Telegram WebApp");
             return;
         }
 
-        // Получаем данные пользователя
+        if (!checkIfAnyDataFilled()) {
+            const confirmSend = confirm("Вы не заполнили ни одного поля (климат, клапаны или заметки). Отправить пустой отчет?");
+            if (!confirmSend) return;
+        }
+
         const currentUser = tg.initDataUnsafe?.user || {};
         const userName = currentUser.first_name ? `${currentUser.first_name} ${currentUser.last_name || ''}`.trim() : "Гость";
         const userId = currentUser.id || null;
 
-        // Сбор температуры и влажности
-        const tempDay = document.getElementById('t_day').value;
-        const tempNight = document.getElementById('t_night').value;
-        const humDay = document.getElementById('h_day').value;
-        const humNight = document.getElementById('h_night').value;
-
-        // Массив для 10 клапанов (валидация: если пустое поле – отправляем пустую строку или null, но оставим строку)
-        const valvesData = [];
-        for (let i = 1; i <= 10; i++) {
-            const ecVal = document.getElementById(`ec_${i}`).value;
-            const phVal = document.getElementById(`ph_${i}`).value;
-            const drVal = document.getElementById(`dr_${i}`).value;
-            valvesData.push({
-                id: i,
-                ec: ecVal === "" ? "" : ecVal,
-                ph: phVal === "" ? "" : phVal,
-                drain_percent: drVal === "" ? "" : drVal
-            });
-        }
-
-        // Заметки
+        const climateData = collectClimateData();
+        const valvesData = collectValvesData();
         const notesText = document.getElementById('notes').value;
 
-        // Формируем итоговый объект отчета (расширенный)
         const reportPayload = {
-            version: "2.0",
+            version: "3.0",
             timestamp: new Date().toISOString(),
             user: {
                 id: userId,
                 name: userName,
                 raw: currentUser
             },
-            climate: {
-                temperature: { day: tempDay, night: tempNight },
-                humidity: { day: humDay, night: humNight }
-            },
-            valves: valvesData,     // массив из 10 элементов
-            notes: notesText,
-            total_valves_count: 10
+            climate: climateData,
+            valves: valvesData,
+            total_valves_count: currentValvesCount,
+            max_valves_possible: MAX_VALVES,
+            notes: notesText
         };
 
-        // Отправка через Telegram WebApp
         try {
             tg.sendData(JSON.stringify(reportPayload));
-            // Визуальный фидбек для пользователя (опционально, т.к. бот сам ответит)
-            const originalBtnText = document.getElementById('sendBtn').innerText;
-            document.getElementById('sendBtn').innerText = '✅ Отправлено!';
+            const btn = document.getElementById('sendBtn');
+            const originalText = btn.innerText;
+            btn.innerText = '✅ Отчет отправлен!';
             setTimeout(() => {
-                document.getElementById('sendBtn').innerText = originalBtnText;
+                btn.innerText = originalText;
             }, 1800);
         } catch (err) {
             console.error("Ошибка отправки:", err);
@@ -412,17 +530,17 @@
         }
     };
 
-    // Кнопка закрытия (имитация закрытия WebApp)
+    // Кнопка закрытия
     document.getElementById('closeBtn').onclick = function() {
         if (tg && tg.close) {
             tg.close();
         } else {
-            window.close?.(); // fallback
-            alert("Закройте вкладку вручную (Telegram WebApp)");
+            window.close?.();
+            alert("Закройте страницу вручную");
         }
     };
 
-    // Доп. стиль для удобства: если есть тема Telegram – адаптируем поля ввода
+    // Адаптация под тему Telegram
     if (tg.themeParams) {
         const root = document.documentElement;
         Object.keys(tg.themeParams).forEach(key => {
@@ -430,63 +548,19 @@
         });
     }
 
-    // Сохраняем, чтобы при повторном открытии случайно не сбросить hidden state, но и так норм
-    // доп. фича: при отправке предупреждать если ничего не заполнено (мягкая валидация)
-    function hasAnyFilled() {
-        // проверяем хотя бы одно поле в клапанах или климате
-        for (let i = 1; i <= 10; i++) {
-            const ec = document.getElementById(`ec_${i}`).value;
-            const ph = document.getElementById(`ph_${i}`).value;
-            const dr = document.getElementById(`dr_${i}`).value;
-            if (ec || ph || dr) return true;
-        }
-        const tDay = document.getElementById('t_day').value;
-        const tNight = document.getElementById('t_night').value;
-        if (tDay || tNight) return true;
-        const notes = document.getElementById('notes').value;
-        if (notes.trim().length > 0) return true;
-        return false;
-    }
-
-    // Легкое предупреждение перед отправкой, если все поля пустые (не блокируем, но подсказываем)
-    const originalSend = document.getElementById('sendBtn').onclick;
-    document.getElementById('sendBtn').onclick = function(e) {
-        if (!hasAnyFilled()) {
-            const userConfirmed = confirm("Вы не заполнили ни одного значения (EC, pH, температура). Отправить пустой отчет?");
-            if (!userConfirmed) return;
-        }
-        // вызываем оригинальную отправку
-        if (typeof originalSend === 'function') {
-            originalSend.call(this, e);
-        } else {
-            // fallback отправки
-            const currentUser = tg.initDataUnsafe?.user || {};
-            const userName = currentUser.first_name ? currentUser.first_name : "Гость";
-            const emptyReport = {
-                user_name: userName,
-                warning: "empty_report_but_confirmed",
-                timestamp: new Date().toISOString()
-            };
-            tg.sendData(JSON.stringify(emptyReport));
-        }
-    };
-    // перепривяжем чтобы не потерять функционал
-    const finalSendHandler = document.getElementById('sendBtn').onclick;
-    document.getElementById('sendBtn').onclick = finalSendHandler;
-
-    // небольшая оптимизация для мобильной клавиатуры: при фокусе скроллим плавно
-    const allInputs = document.querySelectorAll('input, textarea');
-    allInputs.forEach(input => {
-        input.addEventListener('focus', (e) => {
+    // Улучшение UX: при фокусе скроллим
+    const allInteractive = document.querySelectorAll('input, textarea, button');
+    allInteractive.forEach(el => {
+        el.addEventListener('focus', (e) => {
             setTimeout(() => {
                 e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 100);
+            }, 80);
         });
     });
 
-    // Для удобства пользователя, если в Telegram тема темная — сделаем аккуратные бордеры
-    const style = document.createElement('style');
-    style.textContent = `
+    // Стили для темной темы (доп)
+    const styleDark = document.createElement('style');
+    styleDark.textContent = `
         @media (prefers-color-scheme: dark) {
             body {
                 background: var(--tg-theme-bg-color, #121212);
@@ -495,22 +569,24 @@
                 background: rgba(255,255,255,0.05);
                 border-left-color: #66bb6a;
             }
-            .btn-show-more {
-                background: #2d3748;
-                color: #e2e8f0;
-                border-color: #4a5568;
-            }
-            .btn-show-more:active {
-                background: #1e2a3a;
+            .climate-block {
+                background: rgba(255,255,255,0.03);
             }
             input, textarea {
                 background: #1e2a3a;
                 border-color: #334155;
                 color: #f1f5f9;
             }
+            .btn-add-valve {
+                background: #2e7d32;
+            }
+            .valve-counter {
+                background: #2d3748;
+                color: #b9f6ca;
+            }
         }
     `;
-    document.head.appendChild(style);
+    document.head.appendChild(styleDark);
 </script>
 </body>
 </html>
