@@ -3,142 +3,514 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AgroBot Monitoring</title>
+    <title>AgroBot Monitoring | 10 клапанов</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, system-ui, sans-serif;
-            background: var(--tg-theme-bg-color, #f5f5f5);
-            color: var(--tg-theme-text-color, #000);
-            padding: 16px; padding-bottom: 80px;
+            font-family: -apple-system, system-ui, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: var(--tg-theme-bg-color, #f5f7fb);
+            color: var(--tg-theme-text-color, #1e2a3e);
+            padding: 16px;
+            padding-bottom: 90px;
         }
-        .container { max-width: 500px; margin: 0 auto; }
+
+        .container {
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        /* карточки и блоки */
         .header {
-            background: var(--tg-theme-secondary-bg-color, white);
-            border-radius: 16px; padding: 16px; margin-bottom: 16px;
-            text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background: var(--tg-theme-secondary-bg-color, #ffffff);
+            border-radius: 24px;
+            padding: 18px 16px;
+            margin-bottom: 18px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.03);
         }
+
         .user-info {
-            background: #e8f5e9; border-radius: 12px; padding: 10px;
-            margin-top: 10px; font-size: 14px; color: #2e7d32;
+            background: #e9f7eb;
+            border-radius: 40px;
+            padding: 10px 16px;
+            margin-top: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e6f2f;
+            display: inline-block;
+            backdrop-filter: blur(2px);
         }
+
         .section {
-            background: var(--tg-theme-secondary-bg-color, white);
-            border-radius: 16px; padding: 16px; margin-bottom: 16px;
+            background: var(--tg-theme-secondary-bg-color, #ffffff);
+            border-radius: 24px;
+            padding: 18px 16px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            transition: all 0.2s;
         }
-        .section h3 { margin-bottom: 12px; border-left: 4px solid #4CAF50; padding-left: 10px; }
-        .row { display: flex; gap: 8px; margin-bottom: 10px; }
+
+        .section h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            border-left: 4px solid #4caf50;
+            padding-left: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .row input, .row textarea {
+            flex: 1;
+            min-width: 100px;
+        }
+
         input, textarea {
-            width: 100%; padding: 12px; border: 1px solid #ddd;
-            border-radius: 12px; font-size: 16px;
-            background: var(--tg-theme-bg-color, white);
-            color: var(--tg-theme-text-color, #000);
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #cfdfe8;
+            border-radius: 18px;
+            font-size: 15px;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #0f2b3d);
+            transition: 0.2s;
+            font-weight: 500;
         }
-        .valve-card { background: rgba(0,0,0,0.03); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
-        .valve-title { font-weight: bold; color: #4CAF50; margin-bottom: 8px; }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #4caf50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        }
+
+        .valve-card {
+            background: rgba(76, 175, 80, 0.04);
+            border-radius: 20px;
+            padding: 14px;
+            margin-bottom: 14px;
+            border-left: 3px solid #4caf50;
+        }
+
+        .valve-title {
+            font-weight: 700;
+            color: #2c6e2f;
+            margin-bottom: 12px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-valve {
+            background: #4caf50;
+            color: white;
+            border-radius: 30px;
+            padding: 2px 10px;
+            font-size: 12px;
+        }
+
         button {
-            width: 100%; padding: 16px; border-radius: 14px; border: none;
-            font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px;
+            width: 100%;
+            padding: 15px;
+            border-radius: 40px;
+            border: none;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.2s ease;
+            background: var(--tg-theme-button-color, #4caf50);
+            color: var(--tg-theme-button-text-color, white);
         }
-        .btn-primary { background: #4CAF50; color: white; }
-        .btn-secondary { background: #777; color: white; }
+
+        .btn-primary {
+            background: #4caf50;
+            color: white;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+            background: #3e9a41;
+        }
+
+        .btn-secondary {
+            background: #94a3b8;
+            color: white;
+            box-shadow: none;
+        }
+
+        .btn-secondary:active {
+            background: #7e8c9f;
+            transform: scale(0.97);
+        }
+
+        .btn-show-more {
+            background: #f0f2f5;
+            color: #2c3e50;
+            border: 1px solid #cbd5e1;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .btn-show-more:active {
+            background: #e2e8f0;
+        }
+
+        .hidden-valves {
+            display: none;
+        }
+
+        .show-all {
+            display: block;
+        }
+
+        .note-textarea {
+            resize: vertical;
+        }
+
+        hr {
+            margin: 16px 0;
+            border: none;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .small-hint {
+            font-size: 12px;
+            color: #6c7a91;
+            margin-top: 8px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🌱 Агро Мониторинг</h1>
-            <div id="userInfo" class="user-info">⏳ Ожидание авторизации...</div>
-        </div>
-
-        <div class="section">
-            <h3>🌡 Температура (°C)</h3>
-            <div class="row">
-                <input type="number" id="t_day" placeholder="День" step="0.1">
-                <input type="number" id="t_night" placeholder="Ночь" step="0.1">
-            </div>
-        </div>
-
-        <div class="section">
-            <h3>💧 Влажность (%)</h3>
-            <div class="row">
-                <input type="number" id="h_day" placeholder="День">
-                <input type="number" id="h_night" placeholder="Ночь">
-            </div>
-        </div>
-
-        <div id="valvesContainer"></div>
-
-        <div class="section">
-            <h3>📝 Заметки</h3>
-            <textarea id="notes" rows="2" placeholder="Ваши наблюдения..."></textarea>
-        </div>
-
-        <button class="btn-primary" id="sendBtn">📤 ОТПРАВИТЬ ОТЧЕТ</button>
-        <button class="btn-secondary" id="closeBtn">ЗАКРЫТЬ</button>
+<div class="container">
+    <div class="header">
+        <h1>🌾 Агро Мониторинг PRO</h1>
+        <div id="userInfo" class="user-info">⏳ Авторизация через Telegram...</div>
+        <div class="small-hint" style="margin-top: 10px;">🚰 10 клапанов · EC / pH / Дренаж</div>
     </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.ready();
+    <!-- Блок температуры и влажности -->
+    <div class="section">
+        <h3>🌡️ Климат</h3>
+        <div class="row">
+            <input type="number" id="t_day" placeholder="Температура день, °C" step="0.1">
+            <input type="number" id="t_night" placeholder="Температура ночь, °C" step="0.1">
+        </div>
+        <div class="row">
+            <input type="number" id="h_day" placeholder="Влажность день, %">
+            <input type="number" id="h_night" placeholder="Влажность ночь, %">
+        </div>
+    </div>
 
-        // 1. Отображение данных пользователя
-        const userInfo = document.getElementById('userInfo');
-        const user = tg.initDataUnsafe?.user;
+    <!-- КОНТЕЙНЕР ДЛЯ ВСЕХ 10 КЛАПАНОВ (динамическая генерация) -->
+    <div id="valvesWrapper" class="section" style="padding-bottom: 8px;">
+        <h3>🚿 Система клапанов (10 шт)</h3>
+        <div id="valvesList"></div>
+        <!-- Кнопка показать/скрыть дополнительные клапаны -->
+        <button id="toggleValvesBtn" class="btn-show-more">➕ Показать все 10 клапанов</button>
+        <div class="small-hint">Первые 3 клапана всегда видны, остальные — по нажатию</div>
+    </div>
 
-        if (user) {
-            userInfo.innerHTML = `✅ Доступ разрешен: ${user.first_name}`;
+    <!-- Заметки -->
+    <div class="section">
+        <h3>📝 Журнал наблюдений</h3>
+        <textarea id="notes" rows="2" class="note-textarea" placeholder="Доп. информация, проблемы, полив..."></textarea>
+    </div>
+
+    <!-- Кнопки действий -->
+    <button class="btn-primary" id="sendBtn">📤 ОТПРАВИТЬ ОТЧЕТ →</button>
+    <button class="btn-secondary" id="closeBtn">🔒 ЗАКРЫТЬ</button>
+    <div class="small-hint" style="margin-top: 12px;">* Данные отправляются боту через Telegram WebApp</div>
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.ready();
+
+    // ----- 1. Отображение пользователя -----
+    const userInfoDiv = document.getElementById('userInfo');
+    const user = tg.initDataUnsafe?.user;
+    if (user && user.first_name) {
+        userInfoDiv.innerHTML = `✅ Добро пожаловать, ${user.first_name} ${user.last_name || ''} · ID: ${user.id || '—'}`;
+        userInfoDiv.style.background = "#e0f2e9";
+        userInfoDiv.style.color = "#1e6f2f";
+    } else {
+        userInfoDiv.innerHTML = `⚠️ Откройте через кнопку бота Telegram! \n(авто-идентификация)`;
+        userInfoDiv.style.background = "#fff2e0";
+        userInfoDiv.style.color = "#b85c00";
+    }
+
+    // ----- 2. Генерация 10 клапанов с ID 1..10 -----
+    const valvesListDiv = document.getElementById('valvesList');
+    let allValveElements = [];   // массив DOM-элементов каждого клапана (card)
+    let extraValvesStartIdx = 3; // с какого индекса прячем (0-based: 0,1,2 - видимые, 3..9 - скрытые)
+
+    // Функция создания одного блока клапана (возвращает HTMLElement)
+    function createValveCard(valveNumber) {
+        const card = document.createElement('div');
+        card.className = 'valve-card';
+        card.setAttribute('data-valve-id', valveNumber);
+        // уникальные id для полей
+        const ecId = `ec_${valveNumber}`;
+        const phId = `ph_${valveNumber}`;
+        const drId = `dr_${valveNumber}`;
+
+        card.innerHTML = `
+            <div class="valve-title">
+                <span class="badge-valve">🚰 Клапан ${valveNumber}</span>
+                <span style="font-size:13px; font-weight:normal;">EC/pH/дренаж</span>
+            </div>
+            <div class="row">
+                <input type="number" id="${ecId}" placeholder="EC, мСм/см" step="0.1" value="">
+                <input type="number" id="${phId}" placeholder="pH" step="0.1" value="">
+                <input type="number" id="${drId}" placeholder="Дренаж, %" step="0.1" value="">
+            </div>
+        `;
+        return card;
+    }
+
+    // Генерируем все 10 клапанов и сохраняем в массив
+    for (let i = 1; i <= 10; i++) {
+        const valveCard = createValveCard(i);
+        valvesListDiv.appendChild(valveCard);
+        allValveElements.push(valveCard);
+    }
+
+    // ----- 3. Логика отображения: первые 3 всегда видны, остальные скрыты по умолчанию -----
+    // (индексы 0,1,2 — видимые; индексы 3..9 — скрыты)
+    let extraVisible = false; // флаг показывать ли дополнительные 7 клапанов
+
+    function updateValvesVisibility() {
+        for (let idx = 0; idx < allValveElements.length; idx++) {
+            const card = allValveElements[idx];
+            if (idx < 3) {
+                // первые три клапана всегда видны (независимо от флага)
+                card.style.display = 'block';
+            } else {
+                // остальные 7 клапанов (индекс 3..9) показываем только если extraVisible === true
+                card.style.display = extraVisible ? 'block' : 'none';
+            }
+        }
+        // меняем текст кнопки
+        const toggleBtn = document.getElementById('toggleValvesBtn');
+        if (extraVisible) {
+            toggleBtn.innerHTML = '🔽 Скрыть дополнительные клапаны (4-10)';
+            toggleBtn.style.background = "#e9ecef";
         } else {
-            userInfo.innerHTML = `⚠️ Внимание: Откройте через кнопку бота!`;
-            userInfo.style.background = "#ffebee";
-            userInfo.style.color = "#c62828";
+            toggleBtn.innerHTML = '➕ Показать все 10 клапанов (4–10)';
+            toggleBtn.style.background = "#f0f2f5";
+        }
+    }
+
+    // начальное состояние: только первые три видны, остальные скрыты
+    extraVisible = false;
+    updateValvesVisibility();
+
+    // Вешаем обработчик на кнопку переключения
+    const toggleBtn = document.getElementById('toggleValvesBtn');
+    toggleBtn.addEventListener('click', () => {
+        extraVisible = !extraVisible;
+        updateValvesVisibility();
+        // плавный скролл если открыли, но не агрессивно
+        if (extraVisible) {
+            setTimeout(() => {
+                const lastVisibleCard = allValveElements[allValveElements.length - 1];
+                if (lastVisibleCard && lastVisibleCard.getBoundingClientRect().bottom > window.innerHeight) {
+                    lastVisibleCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }, 50);
+        }
+    });
+
+    // ----- 4. Сбор данных и отправка отчета (включая все 10 клапанов даже скрытых) -----
+    document.getElementById('sendBtn').onclick = function() {
+        // Проверяем, что мы в Telegram окружении (опционально)
+        if (!window.Telegram || !window.Telegram.WebApp) {
+            alert("⚠️ Форма работает только внутри Telegram WebApp.\nОткройте через бота.");
+            return;
         }
 
-        // 2. Генерация клапанов
-        const container = document.getElementById('valvesContainer');
-        for (let i = 1; i <= 4; i++) {
-            const div = document.createElement('div');
-            div.className = 'section';
-            div.innerHTML = `
-                <div class="valve-title">🚰 Клапан ${i}</div>
-                <div class="row">
-                    <input type="number" id="ec_${i}" placeholder="EC" step="0.1">
-                    <input type="number" id="ph_${i}" placeholder="pH" step="0.1">
-                    <input type="number" id="dr_${i}" placeholder="Дренаж %">
-                </div>
-            `;
-            container.appendChild(div);
+        // Получаем данные пользователя
+        const currentUser = tg.initDataUnsafe?.user || {};
+        const userName = currentUser.first_name ? `${currentUser.first_name} ${currentUser.last_name || ''}`.trim() : "Гость";
+        const userId = currentUser.id || null;
+
+        // Сбор температуры и влажности
+        const tempDay = document.getElementById('t_day').value;
+        const tempNight = document.getElementById('t_night').value;
+        const humDay = document.getElementById('h_day').value;
+        const humNight = document.getElementById('h_night').value;
+
+        // Массив для 10 клапанов (валидация: если пустое поле – отправляем пустую строку или null, но оставим строку)
+        const valvesData = [];
+        for (let i = 1; i <= 10; i++) {
+            const ecVal = document.getElementById(`ec_${i}`).value;
+            const phVal = document.getElementById(`ph_${i}`).value;
+            const drVal = document.getElementById(`dr_${i}`).value;
+            valvesData.push({
+                id: i,
+                ec: ecVal === "" ? "" : ecVal,
+                ph: phVal === "" ? "" : phVal,
+                drain_percent: drVal === "" ? "" : drVal
+            });
         }
 
-        // 3. Функция отправки
-        document.getElementById('sendBtn').onclick = function() {
-            // Проверяем, что это Telegram WebApp
-            if (!window.Telegram || !window.Telegram.WebApp) {
-                alert("Откройте форму внутри Telegram.");
-                return;
-            }
-            // Не блокируем по initDataUnsafe.user
-            const user = tg.initDataUnsafe?.user || {};
-            const data = {
-                user_name: user.first_name || "Unknown",
-                user_id: user.id || null,
-                temp: { d: document.getElementById('t_day').value, n: document.getElementById('t_night').value },
-                hum: { d: document.getElementById('h_day').value, n: document.getElementById('h_night').value },
-                valves: [],
-                notes: document.getElementById('notes').value
-            };
-            for (let i = 1; i <= 4; i++) {
-                data.valves.push({
-                    id: i,
-                    ec: document.getElementById(`ec_${i}`).value,
-                    ph: document.getElementById(`ph_${i}`).value,
-                    dr: document.getElementById(`dr_${i}`).value
-                });
-            }
-            tg.sendData(JSON.stringify(data));
+        // Заметки
+        const notesText = document.getElementById('notes').value;
+
+        // Формируем итоговый объект отчета (расширенный)
+        const reportPayload = {
+            version: "2.0",
+            timestamp: new Date().toISOString(),
+            user: {
+                id: userId,
+                name: userName,
+                raw: currentUser
+            },
+            climate: {
+                temperature: { day: tempDay, night: tempNight },
+                humidity: { day: humDay, night: humNight }
+            },
+            valves: valvesData,     // массив из 10 элементов
+            notes: notesText,
+            total_valves_count: 10
         };
-    </script>
+
+        // Отправка через Telegram WebApp
+        try {
+            tg.sendData(JSON.stringify(reportPayload));
+            // Визуальный фидбек для пользователя (опционально, т.к. бот сам ответит)
+            const originalBtnText = document.getElementById('sendBtn').innerText;
+            document.getElementById('sendBtn').innerText = '✅ Отправлено!';
+            setTimeout(() => {
+                document.getElementById('sendBtn').innerText = originalBtnText;
+            }, 1800);
+        } catch (err) {
+            console.error("Ошибка отправки:", err);
+            alert("Не удалось отправить отчет. Проверьте соединение.");
+        }
+    };
+
+    // Кнопка закрытия (имитация закрытия WebApp)
+    document.getElementById('closeBtn').onclick = function() {
+        if (tg && tg.close) {
+            tg.close();
+        } else {
+            window.close?.(); // fallback
+            alert("Закройте вкладку вручную (Telegram WebApp)");
+        }
+    };
+
+    // Доп. стиль для удобства: если есть тема Telegram – адаптируем поля ввода
+    if (tg.themeParams) {
+        const root = document.documentElement;
+        Object.keys(tg.themeParams).forEach(key => {
+            root.style.setProperty(`--tg-theme-${key}`, tg.themeParams[key]);
+        });
+    }
+
+    // Сохраняем, чтобы при повторном открытии случайно не сбросить hidden state, но и так норм
+    // доп. фича: при отправке предупреждать если ничего не заполнено (мягкая валидация)
+    function hasAnyFilled() {
+        // проверяем хотя бы одно поле в клапанах или климате
+        for (let i = 1; i <= 10; i++) {
+            const ec = document.getElementById(`ec_${i}`).value;
+            const ph = document.getElementById(`ph_${i}`).value;
+            const dr = document.getElementById(`dr_${i}`).value;
+            if (ec || ph || dr) return true;
+        }
+        const tDay = document.getElementById('t_day').value;
+        const tNight = document.getElementById('t_night').value;
+        if (tDay || tNight) return true;
+        const notes = document.getElementById('notes').value;
+        if (notes.trim().length > 0) return true;
+        return false;
+    }
+
+    // Легкое предупреждение перед отправкой, если все поля пустые (не блокируем, но подсказываем)
+    const originalSend = document.getElementById('sendBtn').onclick;
+    document.getElementById('sendBtn').onclick = function(e) {
+        if (!hasAnyFilled()) {
+            const userConfirmed = confirm("Вы не заполнили ни одного значения (EC, pH, температура). Отправить пустой отчет?");
+            if (!userConfirmed) return;
+        }
+        // вызываем оригинальную отправку
+        if (typeof originalSend === 'function') {
+            originalSend.call(this, e);
+        } else {
+            // fallback отправки
+            const currentUser = tg.initDataUnsafe?.user || {};
+            const userName = currentUser.first_name ? currentUser.first_name : "Гость";
+            const emptyReport = {
+                user_name: userName,
+                warning: "empty_report_but_confirmed",
+                timestamp: new Date().toISOString()
+            };
+            tg.sendData(JSON.stringify(emptyReport));
+        }
+    };
+    // перепривяжем чтобы не потерять функционал
+    const finalSendHandler = document.getElementById('sendBtn').onclick;
+    document.getElementById('sendBtn').onclick = finalSendHandler;
+
+    // небольшая оптимизация для мобильной клавиатуры: при фокусе скроллим плавно
+    const allInputs = document.querySelectorAll('input, textarea');
+    allInputs.forEach(input => {
+        input.addEventListener('focus', (e) => {
+            setTimeout(() => {
+                e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        });
+    });
+
+    // Для удобства пользователя, если в Telegram тема темная — сделаем аккуратные бордеры
+    const style = document.createElement('style');
+    style.textContent = `
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: var(--tg-theme-bg-color, #121212);
+            }
+            .valve-card {
+                background: rgba(255,255,255,0.05);
+                border-left-color: #66bb6a;
+            }
+            .btn-show-more {
+                background: #2d3748;
+                color: #e2e8f0;
+                border-color: #4a5568;
+            }
+            .btn-show-more:active {
+                background: #1e2a3a;
+            }
+            input, textarea {
+                background: #1e2a3a;
+                border-color: #334155;
+                color: #f1f5f9;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
 </body>
 </html>
