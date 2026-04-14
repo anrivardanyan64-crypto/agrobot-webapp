@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>AgroBot Monitoring PRO | 2 дренажа на клапан</title>
+  <title>AgroBot Monitoring PRO | 3 дренажа на клапан</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
       font-family: -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif; 
       background: #f5f7fb; 
@@ -69,6 +69,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      flex-wrap: wrap;
     }
     .badge-valve {
       background: #4caf50;
@@ -85,15 +86,15 @@
     }
     .drain-group input {
       flex: 1;
-      min-width: 120px;
+      min-width: 110px;
       background: #fff9e8;
       border-color: #e0cba0;
     }
     .drain-label {
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
       color: #b45f06;
-      margin-top: 6px;
+      margin-top: 8px;
       margin-bottom: 4px;
     }
     button { 
@@ -128,12 +129,19 @@
       font-size: 13px;
       font-weight: normal;
     }
-    hr { margin: 12px 0; border: none; border-top: 1px solid #e2e8f0; }
     .sub-hint {
       font-size: 11px;
       color: #7f8c8d;
       margin-top: 6px;
       text-align: center;
+    }
+    .ec-ph-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .ec-ph-row input {
+      flex: 1;
     }
   </style>
 </head>
@@ -142,7 +150,7 @@
   <div class="section" style="text-align:center;">
     <h2 style="margin-bottom: 8px;">🌾 Агро Мониторинг PRO</h2>
     <div id="userInfo" class="user">⏳ Авторизация...</div>
-    <div class="sub-hint">🚰 Дренаж 1-го и 2-го полива для каждого клапана</div>
+    <div class="sub-hint">🚰 Дренаж: 1-й полив | 2-й полив | последний полив</div>
   </div>
 
   <!-- ТЕМПЕРАТУРА: 5 полей -->
@@ -169,12 +177,12 @@
     </div>
   </div>
 
-  <!-- КЛАПАНЫ: каждый с EC, pH, Дренаж 1 полив %, Дренаж 2 полив % -->
+  <!-- КЛАПАНЫ: каждый с EC, pH, Дренаж 1 полив %, Дренаж 2 полив %, Дренаж последний полив % -->
   <div class="section">
     <h3>🚿 Клапаны <span id="valveCounter" class="counter-badge">3 / 10</span></h3>
     <div id="valvesContainer"></div>
     <button id="addValveBtn" type="button" class="btn-add">➕ Добавить клапан +</button>
-    <div class="hint">Минимум 3, максимум 10. Для каждого клапана: EC, pH, дренаж 1-го полива, дренаж 2-го полива.</div>
+    <div class="hint">Минимум 3, максимум 10. Для каждого: EC, pH, дренаж 1-го полива, дренаж 2-го полива, дренаж последнего полива.</div>
   </div>
 
   <!-- ЗАМЕТКИ -->
@@ -185,7 +193,7 @@
 
   <button id="sendBtn" type="button" class="btn-send">📤 ОТПРАВИТЬ ОТЧЕТ</button>
   <button id="closeBtn" type="button" class="btn-close">🔒 ЗАКРЫТЬ</button>
-  <div class="sub-hint">* Все данные отправляются боту. Дренаж 1 и 2 полива — отдельные поля.</div>
+  <div class="sub-hint">* Все данные отправляются боту. Дренаж 1,2 и последнего полива — отдельные поля.</div>
 </div>
 
 <script>
@@ -211,7 +219,7 @@
   const addBtn = document.getElementById('addValveBtn');
   const valveCounterSpan = document.getElementById('valveCounter');
 
-  // Функция создания карточки клапана с 4 полями: EC, pH, дренаж1, дренаж2
+  // Функция создания карточки клапана с 5 полями: EC, pH, дренаж1, дренаж2, дренаж последний
   function createValveCard(valveNumber) {
     const card = document.createElement('div');
     card.className = 'valve-card';
@@ -222,20 +230,22 @@
     const phId = `ph_${valveNumber}`;
     const drain1Id = `drain1_${valveNumber}`;
     const drain2Id = `drain2_${valveNumber}`;
+    const drainLastId = `drain_last_${valveNumber}`;
     
     card.innerHTML = `
       <div class="valve-title">
         <span class="badge-valve">🚰 Клапан ${valveNumber}</span>
-        <span style="font-size:12px; font-weight:normal;">EC / pH / Дренаж 1 и 2 полива</span>
+        <span style="font-size:12px; font-weight:normal;">EC / pH / 3 дренажа</span>
       </div>
-      <div class="row">
+      <div class="ec-ph-row">
         <input type="number" id="${ecId}" step="0.1" placeholder="EC, мСм/см">
         <input type="number" id="${phId}" step="0.1" placeholder="pH">
       </div>
-      <div class="drain-label">💧 Дренаж:</div>
+      <div class="drain-label">💧 Дренаж по поливам:</div>
       <div class="drain-group">
         <input type="number" id="${drain1Id}" step="0.1" placeholder="1-й полив, %">
         <input type="number" id="${drain2Id}" step="0.1" placeholder="2-й полив, %">
+        <input type="number" id="${drainLastId}" step="0.1" placeholder="Последний полив, %">
       </div>
     `;
     return card;
@@ -249,11 +259,13 @@
       const phEl = document.getElementById(`ph_${i}`);
       const d1El = document.getElementById(`drain1_${i}`);
       const d2El = document.getElementById(`drain2_${i}`);
+      const dLastEl = document.getElementById(`drain_last_${i}`);
       saved[i] = {
         ec: ecEl?.value || '',
         ph: phEl?.value || '',
         drain1: d1El?.value || '',
-        drain2: d2El?.value || ''
+        drain2: d2El?.value || '',
+        drain_last: dLastEl?.value || ''
       };
     }
     return saved;
@@ -268,10 +280,12 @@
       const ph = document.getElementById(`ph_${i}`);
       const d1 = document.getElementById(`drain1_${i}`);
       const d2 = document.getElementById(`drain2_${i}`);
+      const dLast = document.getElementById(`drain_last_${i}`);
       if (ec) ec.value = vals.ec;
       if (ph) ph.value = vals.ph;
       if (d1) d1.value = vals.drain1;
       if (d2) d2.value = vals.drain2;
+      if (dLast) dLast.value = vals.drain_last;
     });
   }
 
@@ -315,7 +329,7 @@
     addValveHandler();
   });
 
-  // Сбор данных по всем клапанам (с двумя дренажами)
+  // Сбор данных по всем клапанам (с тремя дренажами)
   function collectValvesData() {
     const valvesArray = [];
     for (let i = 1; i <= currentValvesCount; i++) {
@@ -323,12 +337,14 @@
       const ph = document.getElementById(`ph_${i}`)?.value || '';
       const drain1 = document.getElementById(`drain1_${i}`)?.value || '';
       const drain2 = document.getElementById(`drain2_${i}`)?.value || '';
+      const drainLast = document.getElementById(`drain_last_${i}`)?.value || '';
       valvesArray.push({
         id: i,
         ec: ec,
         ph: ph,
-        drain_first_percent: drain1,    // дренаж 1-го полива
-        drain_second_percent: drain2    // дренаж 2-го полива
+        drain_first_percent: drain1,      // дренаж 1-го полива
+        drain_second_percent: drain2,     // дренаж 2-го полива
+        drain_last_percent: drainLast     // дренаж последнего полива
       });
     }
     return valvesArray;
@@ -354,7 +370,7 @@
     };
   }
 
-  // Проверка на наличие хоть каких-то данных (чтобы не слать пустой без подтверждения)
+  // Проверка на наличие хоть каких-то данных
   function hasAnyData() {
     const climate = collectClimateData();
     const hasClimate = 
@@ -364,7 +380,7 @@
       climate.humidity.min || climate.humidity.max;
     
     const valves = collectValvesData();
-    const hasValveData = valves.some(v => v.ec || v.ph || v.drain_first_percent || v.drain_second_percent);
+    const hasValveData = valves.some(v => v.ec || v.ph || v.drain_first_percent || v.drain_second_percent || v.drain_last_percent);
     const notes = document.getElementById('notes')?.value || '';
     const hasNotes = notes.trim().length > 0;
     
@@ -391,7 +407,7 @@
     const userName = currentUser.first_name ? `${currentUser.first_name} ${currentUser.last_name || ''}`.trim() : 'Гость';
     
     const payload = {
-      version: '5.0',
+      version: '6.0',
       timestamp: new Date().toISOString(),
       init_data: tg.initData || '',
       user: {
@@ -409,7 +425,7 @@
       fields_schema: {
         temperature: 'день, ночь, средняя, мин, макс',
         humidity: 'день, ночь, средняя, мин, макс',
-        valve_fields: 'EC, pH, дренаж_1_полив_%, дренаж_2_полив_%'
+        valve_fields: 'EC, pH, дренаж_1_полив_%, дренаж_2_полив_%, дренаж_последний_полив_%'
       }
     };
     
@@ -424,13 +440,11 @@
         sendBtn.style.background = '#2e7d32';
       }, 1500);
       
-      // Вибрация при успехе (если поддерживается)
+      // Вибрация при успехе
       if (tg.HapticFeedback) {
         tg.HapticFeedback.notificationOccurred('success');
       }
       
-      // Можно закрыть через пару секунд или оставить — на усмотрение
-      // setTimeout(() => tg.close(), 2000);
     } catch (err) {
       console.error('Ошибка отправки:', err);
       alert('❌ Не удалось отправить отчет. Проверьте соединение.');
@@ -448,7 +462,7 @@
   // Инициализация: рисуем первые 3 клапана
   renderValves();
   
-  // Доп. стили для темной темы Telegram (если активна)
+  // Доп. стили для темной темы Telegram
   const darkStyles = document.createElement('style');
   darkStyles.textContent = `
     @media (prefers-color-scheme: dark) {
@@ -462,14 +476,14 @@
   `;
   document.head.appendChild(darkStyles);
   
-  // Плавный скролл при фокусе (удобно на мобильных)
+  // Плавный скролл при фокусе
   document.querySelectorAll('input, textarea').forEach(el => {
     el.addEventListener('focus', (e) => {
       setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
     });
   });
   
-  console.log('Форма загружена. Клапанов от 3 до 10, у каждого 2 дренажа (1-й полив и 2-й полив)');
+  console.log('Форма загружена. Клапанов от 3 до 10, у каждого 3 дренажа: 1-й полив, 2-й полив, последний полив');
 </script>
 </body>
 </html>
