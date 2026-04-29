@@ -7,24 +7,24 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { 
-      font-family: -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif; 
-      background: #f5f7fb; 
-      color: #1e2a3e; 
-      padding: 16px 16px 90px; 
+    body {
+      font-family: -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f7fb;
+      color: #1e2a3e;
+      padding: 16px 16px 90px;
     }
     .container { max-width: 560px; margin: 0 auto; }
-    .section { 
-      background: #ffffff; 
-      border-radius: 20px; 
-      padding: 18px 16px; 
-      margin-bottom: 14px; 
+    .section {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 18px 16px;
+      margin-bottom: 14px;
       border: 1px solid #e7edf4;
       transition: all 0.2s;
     }
-    h3 { 
-      margin-bottom: 14px; 
-      font-size: 17px; 
+    h3 {
+      margin-bottom: 14px;
+      font-size: 17px;
       font-weight: 600;
       display: flex;
       align-items: center;
@@ -32,18 +32,18 @@
       flex-wrap: wrap;
       gap: 8px;
     }
-    .row { 
-      display: flex; 
-      gap: 10px; 
-      flex-wrap: wrap; 
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
       margin-bottom: 8px;
     }
-    input, textarea { 
-      width: 100%; 
-      padding: 11px 14px; 
-      border: 1px solid #cfdfe8; 
-      border-radius: 14px; 
-      font-size: 15px; 
+    input, textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid #cfdfe8;
+      border-radius: 14px;
+      font-size: 15px;
       background: #fff;
       transition: 0.2s;
     }
@@ -53,11 +53,11 @@
       box-shadow: 0 0 0 2px rgba(76,175,80,0.2);
     }
     .row input { flex: 1; min-width: 90px; }
-    .valve-card { 
-      background: #f8fbf8; 
-      border-left: 3px solid #4caf50; 
-      border-radius: 16px; 
-      padding: 14px; 
+    .valve-card {
+      background: #f8fbf8;
+      border-left: 3px solid #4caf50;
+      border-radius: 16px;
+      padding: 14px;
       margin-bottom: 12px;
       transition: all 0.2s;
     }
@@ -97,15 +97,15 @@
       margin-top: 8px;
       margin-bottom: 4px;
     }
-    button { 
-      width: 100%; 
-      border: none; 
-      border-radius: 30px; 
-      padding: 14px; 
-      font-size: 16px; 
-      font-weight: 600; 
-      margin-top: 10px; 
-      cursor: pointer; 
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 30px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 10px;
+      cursor: pointer;
       transition: transform 0.1s, background 0.2s;
     }
     button:active { transform: scale(0.97); }
@@ -114,13 +114,13 @@
     .btn-send { background: #2e7d32; color: #fff; box-shadow: 0 2px 8px rgba(46,125,50,0.3); }
     .btn-close { background: #94a3b8; color: #fff; }
     .hint { font-size: 12px; color: #64748b; margin-top: 8px; text-align: center; }
-    .user { 
-      font-size: 14px; 
-      color: #1e6f2f; 
-      background: #e9f7eb; 
-      padding: 8px 16px; 
-      border-radius: 40px; 
-      display: inline-block; 
+    .user {
+      font-size: 14px;
+      color: #1e6f2f;
+      background: #e9f7eb;
+      padding: 8px 16px;
+      border-radius: 40px;
+      display: inline-block;
     }
     .counter-badge {
       background: #eef2ff;
@@ -177,12 +177,18 @@
     </div>
   </div>
 
-  <!-- КЛАПАНЫ: каждый с EC, pH, Дренаж 1 полив %, Дренаж 2 полив %, Дренаж последний полив % -->
+  <!-- КЛАПАНЫ -->
   <div class="section">
     <h3>🚿 Клапаны <span id="valveCounter" class="counter-badge">3 / 10</span></h3>
+
+    <!-- ОБЩЕЕ ПОЛЕ ПЕРЕД КЛАПАНАМИ -->
+    <div class="row">
+      <input id="wateringCount" type="number" step="1" min="0" placeholder="Количество поливов (за день)">
+    </div>
+
     <div id="valvesContainer"></div>
     <button id="addValveBtn" type="button" class="btn-add">➕ Добавить клапан +</button>
-    <div class="hint">Минимум 3, максимум 10. Для каждого: EC, pH, дренаж 1-го полива, дренаж 2-го полива, дренаж последнего полива.</div>
+    <div class="hint">Минимум 3, максимум 10. Для каждого: EC/pH дренажа, EC/pH капельницы, мл капельницы, дренаж 1-го, 2-го и последнего полива.</div>
   </div>
 
   <!-- ЗАМЕТКИ -->
@@ -219,29 +225,45 @@
   const addBtn = document.getElementById('addValveBtn');
   const valveCounterSpan = document.getElementById('valveCounter');
 
-  // Функция создания карточки клапана с 5 полями: EC, pH, дренаж1, дренаж2, дренаж последний
+  // Карточка клапана:
+  // EC/pH дренажа, EC/pH капельницы, мл капельницы
+  // + старые поля дренаж 1/2/последний (%)
   function createValveCard(valveNumber) {
     const card = document.createElement('div');
     card.className = 'valve-card';
     card.setAttribute('data-valve-id', valveNumber);
-    
-    // Уникальные ID для каждого поля
-    const ecId = `ec_${valveNumber}`;
-    const phId = `ph_${valveNumber}`;
+
+    const drainEcId = `drain_ec_${valveNumber}`;
+    const drainPhId = `drain_ph_${valveNumber}`;
+    const dripperEcId = `dripper_ec_${valveNumber}`;
+    const dripperPhId = `dripper_ph_${valveNumber}`;
+    const dripperMlId = `dripper_ml_${valveNumber}`;
+
     const drain1Id = `drain1_${valveNumber}`;
     const drain2Id = `drain2_${valveNumber}`;
     const drainLastId = `drain_last_${valveNumber}`;
-    
+
     card.innerHTML = `
       <div class="valve-title">
         <span class="badge-valve">🚰 Клапан ${valveNumber}</span>
-        <span style="font-size:12px; font-weight:normal;">EC / pH / 3 дренажа</span>
+        <span style="font-size:12px; font-weight:normal;">Дренаж + капельница</span>
       </div>
+
       <div class="ec-ph-row">
-        <input type="number" id="${ecId}" step="0.1" placeholder="EC, мСм/см">
-        <input type="number" id="${phId}" step="0.1" placeholder="pH">
+        <input type="number" id="${drainEcId}" step="0.1" placeholder="EC дренажа, мСм/см">
+        <input type="number" id="${drainPhId}" step="0.1" placeholder="pH дренажа">
       </div>
-      <div class="drain-label">💧 Дренаж по поливам:</div>
+
+      <div class="ec-ph-row">
+        <input type="number" id="${dripperEcId}" step="0.1" placeholder="EC капельницы, мСм/см">
+        <input type="number" id="${dripperPhId}" step="0.1" placeholder="pH капельницы">
+      </div>
+
+      <div class="row">
+        <input type="number" id="${dripperMlId}" step="0.1" placeholder="мл капельницы">
+      </div>
+
+      <div class="drain-label">💧 Дренаж по поливам (%):</div>
       <div class="drain-group">
         <input type="number" id="${drain1Id}" step="0.1" placeholder="1-й полив, %">
         <input type="number" id="${drain2Id}" step="0.1" placeholder="2-й полив, %">
@@ -255,14 +277,20 @@
   function snapshotValveValues() {
     const saved = {};
     for (let i = 1; i <= currentValvesCount; i++) {
-      const ecEl = document.getElementById(`ec_${i}`);
-      const phEl = document.getElementById(`ph_${i}`);
+      const drainEcEl = document.getElementById(`drain_ec_${i}`);
+      const drainPhEl = document.getElementById(`drain_ph_${i}`);
+      const dripperEcEl = document.getElementById(`dripper_ec_${i}`);
+      const dripperPhEl = document.getElementById(`dripper_ph_${i}`);
+      const dripperMlEl = document.getElementById(`dripper_ml_${i}`);
       const d1El = document.getElementById(`drain1_${i}`);
       const d2El = document.getElementById(`drain2_${i}`);
       const dLastEl = document.getElementById(`drain_last_${i}`);
       saved[i] = {
-        ec: ecEl?.value || '',
-        ph: phEl?.value || '',
+        drain_ec: drainEcEl?.value || '',
+        drain_ph: drainPhEl?.value || '',
+        dripper_ec: dripperEcEl?.value || '',
+        dripper_ph: dripperPhEl?.value || '',
+        dripper_ml: dripperMlEl?.value || '',
         drain1: d1El?.value || '',
         drain2: d2El?.value || '',
         drain_last: dLastEl?.value || ''
@@ -276,13 +304,20 @@
     Object.keys(saved).forEach(key => {
       const i = Number(key);
       const vals = saved[i];
-      const ec = document.getElementById(`ec_${i}`);
-      const ph = document.getElementById(`ph_${i}`);
+      const drainEc = document.getElementById(`drain_ec_${i}`);
+      const drainPh = document.getElementById(`drain_ph_${i}`);
+      const dripperEc = document.getElementById(`dripper_ec_${i}`);
+      const dripperPh = document.getElementById(`dripper_ph_${i}`);
+      const dripperMl = document.getElementById(`dripper_ml_${i}`);
       const d1 = document.getElementById(`drain1_${i}`);
       const d2 = document.getElementById(`drain2_${i}`);
       const dLast = document.getElementById(`drain_last_${i}`);
-      if (ec) ec.value = vals.ec;
-      if (ph) ph.value = vals.ph;
+
+      if (drainEc) drainEc.value = vals.drain_ec;
+      if (drainPh) drainPh.value = vals.drain_ph;
+      if (dripperEc) dripperEc.value = vals.dripper_ec;
+      if (dripperPh) dripperPh.value = vals.dripper_ph;
+      if (dripperMl) dripperMl.value = vals.dripper_ml;
       if (d1) d1.value = vals.drain1;
       if (d2) d2.value = vals.drain2;
       if (dLast) dLast.value = vals.drain_last;
@@ -297,8 +332,7 @@
       valvesContainer.appendChild(createValveCard(i));
     }
     restoreValveValues(saved);
-    
-    // Обновляем счетчик и состояние кнопки
+
     valveCounterSpan.textContent = `${currentValvesCount} / ${MAX_VALVES}`;
     if (currentValvesCount >= MAX_VALVES) {
       addBtn.disabled = true;
@@ -316,7 +350,6 @@
     if (currentValvesCount < MAX_VALVES) {
       currentValvesCount++;
       renderValves();
-      // Плавный скролл к новому клапану
       setTimeout(() => {
         const lastCard = valvesContainer.lastChild;
         if (lastCard) lastCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -329,22 +362,30 @@
     addValveHandler();
   });
 
-  // Сбор данных по всем клапанам (с тремя дренажами)
+  // Сбор данных по всем клапанам
   function collectValvesData() {
     const valvesArray = [];
     for (let i = 1; i <= currentValvesCount; i++) {
-      const ec = document.getElementById(`ec_${i}`)?.value || '';
-      const ph = document.getElementById(`ph_${i}`)?.value || '';
+      const drainEc = document.getElementById(`drain_ec_${i}`)?.value || '';
+      const drainPh = document.getElementById(`drain_ph_${i}`)?.value || '';
+      const dripperEc = document.getElementById(`dripper_ec_${i}`)?.value || '';
+      const dripperPh = document.getElementById(`dripper_ph_${i}`)?.value || '';
+      const dripperMl = document.getElementById(`dripper_ml_${i}`)?.value || '';
+
       const drain1 = document.getElementById(`drain1_${i}`)?.value || '';
       const drain2 = document.getElementById(`drain2_${i}`)?.value || '';
       const drainLast = document.getElementById(`drain_last_${i}`)?.value || '';
+
       valvesArray.push({
         id: i,
-        ec: ec,
-        ph: ph,
-        drain_first_percent: drain1,      // дренаж 1-го полива
-        drain_second_percent: drain2,     // дренаж 2-го полива
-        drain_last_percent: drainLast     // дренаж последнего полива
+        drain_ec: drainEc,
+        drain_ph: drainPh,
+        dripper_ec: dripperEc,
+        dripper_ph: dripperPh,
+        dripper_ml: dripperMl,
+        drain_first_percent: drain1,
+        drain_second_percent: drain2,
+        drain_last_percent: drainLast
       });
     }
     return valvesArray;
@@ -373,41 +414,47 @@
   // Проверка на наличие хоть каких-то данных
   function hasAnyData() {
     const climate = collectClimateData();
-    const hasClimate = 
+    const hasClimate =
       climate.temperature.day || climate.temperature.night || climate.temperature.avg ||
       climate.temperature.min || climate.temperature.max ||
       climate.humidity.day || climate.humidity.night || climate.humidity.avg ||
       climate.humidity.min || climate.humidity.max;
-    
+
     const valves = collectValvesData();
-    const hasValveData = valves.some(v => v.ec || v.ph || v.drain_first_percent || v.drain_second_percent || v.drain_last_percent);
+    const hasValveData = valves.some(v =>
+      v.drain_ec || v.drain_ph || v.dripper_ec || v.dripper_ph || v.dripper_ml ||
+      v.drain_first_percent || v.drain_second_percent || v.drain_last_percent
+    );
+
+    const wateringCount = document.getElementById('wateringCount')?.value || '';
+    const hasWateringCount = wateringCount !== '';
+
     const notes = document.getElementById('notes')?.value || '';
     const hasNotes = notes.trim().length > 0;
-    
-    return hasClimate || hasValveData || hasNotes;
+
+    return hasClimate || hasValveData || hasWateringCount || hasNotes;
   }
 
   // ---- ОТПРАВКА ОТЧЕТА ----
   const sendBtn = document.getElementById('sendBtn');
   sendBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    
+
     if (!tg) {
       alert('❌ Откройте форму внутри Telegram WebApp');
       return;
     }
-    
-    // Если совсем пусто — предупредим
+
     if (!hasAnyData()) {
       const confirmSend = confirm('Вы не заполнили ни одного поля. Отправить пустой отчет?');
       if (!confirmSend) return;
     }
-    
+
     const currentUser = tg.initDataUnsafe?.user || {};
     const userName = currentUser.first_name ? `${currentUser.first_name} ${currentUser.last_name || ''}`.trim() : 'Гость';
-    
+
     const payload = {
-      version: '6.0',
+      version: '6.1',
       timestamp: new Date().toISOString(),
       init_data: tg.initData || '',
       user: {
@@ -418,6 +465,7 @@
         last_name: currentUser.last_name || ''
       },
       climate: collectClimateData(),
+      watering_count: document.getElementById('wateringCount')?.value || '',
       valves: collectValvesData(),
       total_valves_count: currentValvesCount,
       max_valves: MAX_VALVES,
@@ -425,13 +473,13 @@
       fields_schema: {
         temperature: 'день, ночь, средняя, мин, макс',
         humidity: 'день, ночь, средняя, мин, макс',
-        valve_fields: 'EC, pH, дренаж_1_полив_%, дренаж_2_полив_%, дренаж_последний_полив_%'
+        watering_count: 'количество_поливов_за_день',
+        valve_fields: 'EC_дренажа, pH_дренажа, EC_капельницы, pH_капельницы, мл_капельницы, дренаж_1_полив_%, дренаж_2_полив_%, дренаж_последний_полив_%'
       }
     };
-    
+
     try {
       tg.sendData(JSON.stringify(payload));
-      // Визуальный фидбек
       const originalText = sendBtn.textContent;
       sendBtn.textContent = '✅ Отправлено!';
       sendBtn.style.background = '#1b5e20';
@@ -439,18 +487,17 @@
         sendBtn.textContent = originalText;
         sendBtn.style.background = '#2e7d32';
       }, 1500);
-      
-      // Вибрация при успехе
+
       if (tg.HapticFeedback) {
         tg.HapticFeedback.notificationOccurred('success');
       }
-      
+
     } catch (err) {
       console.error('Ошибка отправки:', err);
       alert('❌ Не удалось отправить отчет. Проверьте соединение.');
     }
   });
-  
+
   // Закрытие WebApp
   const closeBtn = document.getElementById('closeBtn');
   closeBtn.addEventListener('click', (e) => {
@@ -458,10 +505,10 @@
     if (tg && tg.close) tg.close();
     else window.close?.();
   });
-  
+
   // Инициализация: рисуем первые 3 клапана
   renderValves();
-  
+
   // Доп. стили для темной темы Telegram
   const darkStyles = document.createElement('style');
   darkStyles.textContent = `
@@ -475,15 +522,15 @@
     }
   `;
   document.head.appendChild(darkStyles);
-  
+
   // Плавный скролл при фокусе
   document.querySelectorAll('input, textarea').forEach(el => {
     el.addEventListener('focus', (e) => {
       setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
     });
   });
-  
-  console.log('Форма загружена. Клапанов от 3 до 10, у каждого 3 дренажа: 1-й полив, 2-й полив, последний полив');
+
+  console.log('Форма загружена. Добавлено поле количества поливов и новые поля дренаж/капельница на каждый клапан.');
 </script>
 </body>
 </html>
