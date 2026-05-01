@@ -1,221 +1,131 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>AgroBot Monitoring PRO | 3 дренажа на клапан</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif;
-      background: #f5f7fb;
-      color: #1e2a3e;
-      padding: 16px 16px 90px;
-    }
-    .container { max-width: 560px; margin: 0 auto; }
-    .section {
-      background: #ffffff;
-      border-radius: 20px;
-      padding: 18px 16px;
-      margin-bottom: 14px;
-      border: 1px solid #e7edf4;
-      transition: all 0.2s;
-    }
-    h3 {
-      margin-bottom: 14px;
-      font-size: 17px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 11px 14px;
-      border: 1px solid #cfdfe8;
-      border-radius: 14px;
-      font-size: 15px;
-      background: #fff;
-      transition: 0.2s;
-    }
-    input:focus, textarea:focus {
-      outline: none;
-      border-color: #4caf50;
-      box-shadow: 0 0 0 2px rgba(76,175,80,0.2);
-    }
-    .row input { flex: 1; min-width: 90px; }
-    .valve-card {
-      background: #f8fbf8;
-      border-left: 3px solid #4caf50;
-      border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 12px;
-      transition: all 0.2s;
-    }
-    .valve-title {
-      font-weight: 700;
-      color: #2c6e2f;
-      margin-bottom: 12px;
-      font-size: 15px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .badge-valve {
-      background: #4caf50;
-      color: white;
-      border-radius: 30px;
-      padding: 3px 12px;
-      font-size: 12px;
-    }
-    .drain-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 8px;
-      flex-wrap: wrap;
-    }
-    .drain-group input {
-      flex: 1;
-      min-width: 110px;
-      background: #fff9e8;
-      border-color: #e0cba0;
-    }
-    .drain-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: #b45f06;
-      margin-top: 8px;
-      margin-bottom: 4px;
-    }
-    button {
-      width: 100%;
-      border: none;
-      border-radius: 30px;
-      padding: 14px;
-      font-size: 16px;
-      font-weight: 600;
-      margin-top: 10px;
-      cursor: pointer;
-      transition: transform 0.1s, background 0.2s;
-    }
-    button:active { transform: scale(0.97); }
-    .btn-add { background: #4caf50; color: #fff; }
-    .btn-add:disabled { background: #b9d8bb; cursor: not-allowed; transform: none; }
-    .btn-send { background: #2e7d32; color: #fff; box-shadow: 0 2px 8px rgba(46,125,50,0.3); }
-    .btn-close { background: #94a3b8; color: #fff; }
-    .hint { font-size: 12px; color: #64748b; margin-top: 8px; text-align: center; }
-    .user {
-      font-size: 14px;
-      color: #1e6f2f;
-      background: #e9f7eb;
-      padding: 8px 16px;
-      border-radius: 40px;
-      display: inline-block;
-    }
-    .counter-badge {
-      background: #eef2ff;
-      padding: 4px 12px;
-      border-radius: 40px;
-      font-size: 13px;
-      font-weight: normal;
-    }
-    .sub-hint {
-      font-size: 11px;
-      color: #7f8c8d;
-      margin-top: 6px;
-      text-align: center;
-    }
-    .ec-ph-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 6px;
-    }
-    .ec-ph-row input {
-      flex: 1;
-    }
-  </style>
-</head>
-<body>
-<div class="container">
-  <div class="section" style="text-align:center;">
-    <h2 style="margin-bottom: 8px;">🌾 Агро Мониторинг PRO</h2>
-    <div id="userInfo" class="user">⏳ Авторизация...</div>
-    <div class="sub-hint">🚰 Дренаж: 1-й полив | 2-й полив | последний полив</div>
-  </div>
-
-  <!-- ТЕМПЕРАТУРА: 5 полей -->
-  <div class="section">
-    <h3>🌡️ Температура (°C) <span class="counter-badge">5 параметров</span></h3>
-    <div class="row">
-      <input id="temp_day" type="number" step="0.1" placeholder="День">
-      <input id="temp_night" type="number" step="0.1" placeholder="Ночь">
-      <input id="temp_avg" type="number" step="0.1" placeholder="Средняя">
-      <input id="temp_min" type="number" step="0.1" placeholder="Мин">
-      <input id="temp_max" type="number" step="0.1" placeholder="Макс">
-    </div>
-  </div>
-
-  <!-- ВЛАЖНОСТЬ: 5 полей -->
-  <div class="section">
-    <h3>💧 Влажность (%) <span class="counter-badge">5 параметров</span></h3>
-    <div class="row">
-      <input id="hum_day" type="number" step="0.1" placeholder="День">
-      <input id="hum_night" type="number" step="0.1" placeholder="Ночь">
-      <input id="hum_avg" type="number" step="0.1" placeholder="Средняя">
-      <input id="hum_min" type="number" step="0.1" placeholder="Мин">
-      <input id="hum_max" type="number" step="0.1" placeholder="Макс">
-    </div>
-  </div>
-
-  <!-- КЛАПАНЫ -->
-  <div class="section">
-    <h3>🚿 Клапаны <span id="valveCounter" class="counter-badge">3 / 10</span></h3>
-
-    <!-- ОБЩЕЕ ПОЛЕ ПЕРЕД КЛАПАНАМИ -->
-    <div class="row">
-      <input id="wateringCount" type="number" step="1" min="0" placeholder="Количество поливов (за день)">
-    </div>
-
-    <div id="valvesContainer"></div>
-    <button id="addValveBtn" type="button" class="btn-add">➕ Добавить клапан +</button>
-    <div class="hint">Минимум 3, максимум 10. Для каждого: EC/pH дренажа, EC/pH капельницы, мл капельницы, дренаж 1-го, 2-го и последнего полива.</div>
-  </div>
-
-  <!-- ЗАМЕТКИ -->
-  <div class="section">
-    <h3>📝 Журнал наблюдений</h3>
-    <textarea id="notes" rows="3" placeholder="Доп. информация, проблемы, калибровка, замечания..."></textarea>
-  </div>
-
-  <button id="sendBtn" type="button" class="btn-send">📤 ОТПРАВИТЬ ОТЧЕТ</button>
-  <button id="closeBtn" type="button" class="btn-close">🔒 ЗАКРЫТЬ</button>
-  <div class="sub-hint">* Все данные отправляются боту. Дренаж 1,2 и последнего полива — отдельные поля.</div>
-</div>
-
 <script>
   const tg = window.Telegram?.WebApp;
   if (tg) { tg.ready(); tg.expand(); }
 
+  const I18N = {
+    ru: {
+      pageTitle: "AgroBot Monitoring PRO | 3 дренажа на клапан",
+      appTitle: "🌾 Агро Мониторинг PRO",
+      userAuthLoading: "⏳ Авторизация...",
+      userOpenInBot: "⚠️ Откройте через Telegram-бота (WebApp)",
+      subHintTop: "🚰 Дренаж: 1-й полив | 2-й полив | последний полив",
+
+      tempTitle: "🌡️ Температура (°C)",
+      humTitle: "💧 Влажность (%)",
+      params5: "5 параметров",
+
+      tempDay: "День",
+      tempNight: "Ночь",
+      tempAvg: "Средняя",
+      tempMin: "Мин",
+      tempMax: "Макс",
+
+      valvesTitle: "🚿 Клапаны",
+      addValve: "➕ Добавить клапан +",
+      maxValves: "❌ Максимум 10 клапанов",
+      wateringCount: "Количество поливов (за день)",
+      valvesHint: "Минимум 3, максимум 10. Для каждого: EC/pH дренажа, EC/pH капельницы, мл капельницы, дренаж 1-го, 2-го и последнего полива.",
+
+      notesTitle: "📝 Журнал наблюдений",
+      notesPlaceholder: "Доп. информация, проблемы, калибровка, замечания...",
+
+      sendBtn: "📤 ОТПРАВИТЬ ОТЧЕТ",
+      closeBtn: "🔒 ЗАКРЫТЬ",
+      subHintBottom: "* Все данные отправляются боту. Дренаж 1,2 и последнего полива — отдельные поля.",
+
+      valveBadge: "🚰 Клапан {n}",
+      valveSubtitle: "Дренаж + капельница",
+      phDrain: "pH дренажа",
+      ecDrain: "EC дренажа, мСм/см",
+      ecDripper: "EC капельницы, мСм/см",
+      phDripper: "pH капельницы",
+      mlDripper: "мл капельницы",
+      drainByWatering: "💧 Дренаж по поливам (%):",
+      drain1: "1-й полив, %",
+      drain2: "2-й полив, %",
+      drainLast: "Последний полив, %",
+
+      alertOpenInside: "❌ Откройте форму внутри Telegram WebApp",
+      confirmEmpty: "Вы не заполнили ни одного поля. Отправить пустой отчет?",
+      sendDone: "✅ Отправлено!",
+      sendError: "❌ Не удалось отправить отчет. Проверьте соединение.",
+      guest: "Гость",
+
+      schemaTemp: "день, ночь, средняя, мин, макс",
+      schemaHum: "день, ночь, средняя, мин, макс",
+      schemaWatering: "количество_поливов_за_день",
+      schemaValve: "EC_дренажа, pH_дренажа, EC_капельницы, pH_капельницы, мл_капельницы, дренаж_1_полив_%, дренаж_2_полив_%, дренаж_последний_полив_%",
+      loadedLog: "Форма загружена. Добавлено поле количества поливов и новые поля дренаж/капельница на каждый клапан."
+    },
+    hy: {
+      pageTitle: "AgroBot Monitoring PRO | 3 դրենաժ յուրաքանչյուր փականի համար",
+      appTitle: "🌾 Ագրո մոնիթորինգ PRO",
+      userAuthLoading: "⏳ Նույնականացում...",
+      userOpenInBot: "⚠️ Բացեք Telegram բոտից (WebApp)",
+      subHintTop: "🚰 Դրենաժ՝ 1-ին ջրում | 2-րդ ջրում | վերջին ջրում",
+
+      tempTitle: "🌡️ Ջերմաստիճան (°C)",
+      humTitle: "💧 Խոնավություն (%)",
+      params5: "5 պարամետր",
+
+      tempDay: "Ցերեկ",
+      tempNight: "Գիշեր",
+      tempAvg: "Միջին",
+      tempMin: "Նվազ.",
+      tempMax: "Առավ.",
+
+      valvesTitle: "🚿 Փականներ",
+      addValve: "➕ Ավելացնել փական +",
+      maxValves: "❌ Առավելագույնը 10 փական",
+      wateringCount: "Ջրումների քանակը (օրական)",
+      valvesHint: "Նվազագույնը 3, առավելագույնը 10։ Յուրաքանչյուրի համար՝ EC/pH դրենաժի, EC/pH կաթիլի, կաթիլի մլ, 1-ին, 2-րդ և վերջին ջրման դրենաժ։",
+
+      notesTitle: "📝 Դիտարկումների գրանցում",
+      notesPlaceholder: "Լրացուցիչ տեղեկություն, խնդիրներ, կալիբրավորում, նշումներ...",
+
+      sendBtn: "📤 ՈՒՂԱՐԿԵԼ ՀԱՇՎԵՏՎՈՒԹՅՈՒՆԸ",
+      closeBtn: "🔒 ՓԱԿԵԼ",
+      subHintBottom: "* Բոլոր տվյալները ուղարկվում են բոտին։ 1-ին, 2-րդ և վերջին ջրման դրենաժը՝ առանձին դաշտերով։",
+
+      valveBadge: "🚰 Փական {n}",
+      valveSubtitle: "Դրենաժ + կաթիլ",
+      phDrain: "pH դրենաժի",
+      ecDrain: "EC դրենաժի, mS/cm",
+      ecDripper: "EC կաթիլի, mS/cm",
+      phDripper: "pH կաթիլի",
+      mlDripper: "կաթիլի մլ",
+      drainByWatering: "💧 Դրենաժ ըստ ջրումների (%):",
+      drain1: "1-ին ջրում, %",
+      drain2: "2-րդ ջրում, %",
+      drainLast: "Վերջին ջրում, %",
+
+      alertOpenInside: "❌ Բացեք ձևը Telegram WebApp-ի ներսում",
+      confirmEmpty: "Դուք ոչ մի դաշտ չեք լրացրել։ Ուղարկե՞լ դատարկ հաշվետվություն։",
+      sendDone: "✅ Ուղարկված է!",
+      sendError: "❌ Չհաջողվեց ուղարկել հաշվետվությունը։ Ստուգեք կապը։",
+      guest: "Հյուր",
+
+      schemaTemp: "ցերեկ, գիշեր, միջին, նվազ., առավ.",
+      schemaHum: "ցերեկ, գիշեր, միջին, նվազ., առավ.",
+      schemaWatering: "օրական_ջրումների_քանակ",
+      schemaValve: "EC_դրենաժ, pH_դրենաժ, EC_կաթիլ, pH_կաթիլ, մլ_կաթիլ, դրենաժ_1_ջրում_%, դրենաժ_2_ջրում_%, դրենաժ_վերջին_ջրում_%",
+      loadedLog: "Ձևը բեռնվել է։ Ավելացվել են ջրումների քանակի և նոր դրենաժ/կաթիլ դաշտերը յուրաքանչյուր փականի համար։"
+    }
+  };
+
+  function detectLang() {
+    const code = (tg?.initDataUnsafe?.user?.language_code || "").toLowerCase();
+    return code.startsWith("hy") ? "hy" : "ru";
+  }
+
+  const lang = detectLang();
+  const t = I18N[lang];
+  document.documentElement.lang = lang;
+  document.title = t.pageTitle;
+
   // ---- пользовательская информация ----
   const user = tg?.initDataUnsafe?.user;
   const userInfoDiv = document.getElementById('userInfo');
-  if (user && user.first_name) {
-    userInfoDiv.textContent = `✅ ${user.first_name} ${user.last_name || ''} · ID: ${user.id || '—'}`;
-  } else {
-    userInfoDiv.textContent = '⚠️ Откройте через Telegram-бота (WebApp)';
-    userInfoDiv.style.background = "#fff2e0";
-    userInfoDiv.style.color = "#b85c00";
-  }
 
   // ---- управление клапанами (от 3 до 10) ----
   let currentValvesCount = 3;
@@ -225,9 +135,41 @@
   const addBtn = document.getElementById('addValveBtn');
   const valveCounterSpan = document.getElementById('valveCounter');
 
-  // Карточка клапана:
-  // EC/pH дренажа, EC/pH капельницы, мл капельницы
-  // + старые поля дренаж 1/2/последний (%)
+  function applyStaticTranslations() {
+    const appTitle = document.querySelector('.section h2');
+    if (appTitle) appTitle.textContent = t.appTitle;
+
+    const subHints = document.querySelectorAll('.sub-hint');
+    if (subHints[0]) subHints[0].textContent = t.subHintTop;
+    if (subHints[1]) subHints[1].textContent = t.subHintBottom;
+
+    const sectionTitles = document.querySelectorAll('.section h3');
+    if (sectionTitles[0]) sectionTitles[0].innerHTML = `${t.tempTitle} <span class="counter-badge">${t.params5}</span>`;
+    if (sectionTitles[1]) sectionTitles[1].innerHTML = `${t.humTitle} <span class="counter-badge">${t.params5}</span>`;
+    if (sectionTitles[2]) sectionTitles[2].innerHTML = `${t.valvesTitle} <span id="valveCounter" class="counter-badge">${currentValvesCount} / ${MAX_VALVES}</span>`;
+    if (sectionTitles[3]) sectionTitles[3].textContent = t.notesTitle;
+
+    document.getElementById('temp_day').placeholder = t.tempDay;
+    document.getElementById('temp_night').placeholder = t.tempNight;
+    document.getElementById('temp_avg').placeholder = t.tempAvg;
+    document.getElementById('temp_min').placeholder = t.tempMin;
+    document.getElementById('temp_max').placeholder = t.tempMax;
+
+    document.getElementById('hum_day').placeholder = t.tempDay;
+    document.getElementById('hum_night').placeholder = t.tempNight;
+    document.getElementById('hum_avg').placeholder = t.tempAvg;
+    document.getElementById('hum_min').placeholder = t.tempMin;
+    document.getElementById('hum_max').placeholder = t.tempMax;
+
+    document.getElementById('wateringCount').placeholder = t.wateringCount;
+    document.querySelector('.hint').textContent = t.valvesHint;
+
+    document.getElementById('notes').placeholder = t.notesPlaceholder;
+    document.getElementById('sendBtn').textContent = t.sendBtn;
+    document.getElementById('closeBtn').textContent = t.closeBtn;
+  }
+
+  // Карточка клапана
   function createValveCard(valveNumber) {
     const card = document.createElement('div');
     card.className = 'valve-card';
@@ -245,107 +187,84 @@
 
     card.innerHTML = `
       <div class="valve-title">
-        <span class="badge-valve">🚰 Клапан ${valveNumber}</span>
-        <span style="font-size:12px; font-weight:normal;">Дренаж + капельница</span>
+        <span class="badge-valve">${t.valveBadge.replace('{n}', valveNumber)}</span>
+        <span style="font-size:12px; font-weight:normal;">${t.valveSubtitle}</span>
       </div>
 
       <div class="ec-ph-row">
-        <input type="number" id="${drainEcId}" step="0.1" placeholder="EC дренажа, мСм/см">
-        <input type="number" id="${drainPhId}" step="0.1" placeholder="pH дренажа">
+        <input type="number" id="${drainEcId}" step="0.1" placeholder="${t.ecDrain}">
+        <input type="number" id="${drainPhId}" step="0.1" placeholder="${t.phDrain}">
       </div>
 
       <div class="ec-ph-row">
-        <input type="number" id="${dripperEcId}" step="0.1" placeholder="EC капельницы, мСм/см">
-        <input type="number" id="${dripperPhId}" step="0.1" placeholder="pH капельницы">
+        <input type="number" id="${dripperEcId}" step="0.1" placeholder="${t.ecDripper}">
+        <input type="number" id="${dripperPhId}" step="0.1" placeholder="${t.phDripper}">
       </div>
 
       <div class="row">
-        <input type="number" id="${dripperMlId}" step="0.1" placeholder="мл капельницы">
+        <input type="number" id="${dripperMlId}" step="0.1" placeholder="${t.mlDripper}">
       </div>
 
-      <div class="drain-label">💧 Дренаж по поливам (%):</div>
+      <div class="drain-label">${t.drainByWatering}</div>
       <div class="drain-group">
-        <input type="number" id="${drain1Id}" step="0.1" placeholder="1-й полив, %">
-        <input type="number" id="${drain2Id}" step="0.1" placeholder="2-й полив, %">
-        <input type="number" id="${drainLastId}" step="0.1" placeholder="Последний полив, %">
+        <input type="number" id="${drain1Id}" step="0.1" placeholder="${t.drain1}">
+        <input type="number" id="${drain2Id}" step="0.1" placeholder="${t.drain2}">
+        <input type="number" id="${drainLastId}" step="0.1" placeholder="${t.drainLast}">
       </div>
     `;
     return card;
   }
 
-  // Сохраняем значения текущих клапанов перед перерисовкой
   function snapshotValveValues() {
     const saved = {};
     for (let i = 1; i <= currentValvesCount; i++) {
-      const drainEcEl = document.getElementById(`drain_ec_${i}`);
-      const drainPhEl = document.getElementById(`drain_ph_${i}`);
-      const dripperEcEl = document.getElementById(`dripper_ec_${i}`);
-      const dripperPhEl = document.getElementById(`dripper_ph_${i}`);
-      const dripperMlEl = document.getElementById(`dripper_ml_${i}`);
-      const d1El = document.getElementById(`drain1_${i}`);
-      const d2El = document.getElementById(`drain2_${i}`);
-      const dLastEl = document.getElementById(`drain_last_${i}`);
       saved[i] = {
-        drain_ec: drainEcEl?.value || '',
-        drain_ph: drainPhEl?.value || '',
-        dripper_ec: dripperEcEl?.value || '',
-        dripper_ph: dripperPhEl?.value || '',
-        dripper_ml: dripperMlEl?.value || '',
-        drain1: d1El?.value || '',
-        drain2: d2El?.value || '',
-        drain_last: dLastEl?.value || ''
+        drain_ec: document.getElementById(`drain_ec_${i}`)?.value || '',
+        drain_ph: document.getElementById(`drain_ph_${i}`)?.value || '',
+        dripper_ec: document.getElementById(`dripper_ec_${i}`)?.value || '',
+        dripper_ph: document.getElementById(`dripper_ph_${i}`)?.value || '',
+        dripper_ml: document.getElementById(`dripper_ml_${i}`)?.value || '',
+        drain1: document.getElementById(`drain1_${i}`)?.value || '',
+        drain2: document.getElementById(`drain2_${i}`)?.value || '',
+        drain_last: document.getElementById(`drain_last_${i}`)?.value || ''
       };
     }
     return saved;
   }
 
-  // Восстанавливаем значения после перерисовки
   function restoreValveValues(saved) {
     Object.keys(saved).forEach(key => {
       const i = Number(key);
       const vals = saved[i];
-      const drainEc = document.getElementById(`drain_ec_${i}`);
-      const drainPh = document.getElementById(`drain_ph_${i}`);
-      const dripperEc = document.getElementById(`dripper_ec_${i}`);
-      const dripperPh = document.getElementById(`dripper_ph_${i}`);
-      const dripperMl = document.getElementById(`dripper_ml_${i}`);
-      const d1 = document.getElementById(`drain1_${i}`);
-      const d2 = document.getElementById(`drain2_${i}`);
-      const dLast = document.getElementById(`drain_last_${i}`);
-
-      if (drainEc) drainEc.value = vals.drain_ec;
-      if (drainPh) drainPh.value = vals.drain_ph;
-      if (dripperEc) dripperEc.value = vals.dripper_ec;
-      if (dripperPh) dripperPh.value = vals.dripper_ph;
-      if (dripperMl) dripperMl.value = vals.dripper_ml;
-      if (d1) d1.value = vals.drain1;
-      if (d2) d2.value = vals.drain2;
-      if (dLast) dLast.value = vals.drain_last;
+      if (document.getElementById(`drain_ec_${i}`)) document.getElementById(`drain_ec_${i}`).value = vals.drain_ec;
+      if (document.getElementById(`drain_ph_${i}`)) document.getElementById(`drain_ph_${i}`).value = vals.drain_ph;
+      if (document.getElementById(`dripper_ec_${i}`)) document.getElementById(`dripper_ec_${i}`).value = vals.dripper_ec;
+      if (document.getElementById(`dripper_ph_${i}`)) document.getElementById(`dripper_ph_${i}`).value = vals.dripper_ph;
+      if (document.getElementById(`dripper_ml_${i}`)) document.getElementById(`dripper_ml_${i}`).value = vals.dripper_ml;
+      if (document.getElementById(`drain1_${i}`)) document.getElementById(`drain1_${i}`).value = vals.drain1;
+      if (document.getElementById(`drain2_${i}`)) document.getElementById(`drain2_${i}`).value = vals.drain2;
+      if (document.getElementById(`drain_last_${i}`)) document.getElementById(`drain_last_${i}`).value = vals.drain_last;
     });
   }
 
-  // Полная отрисовка всех клапанов
   function renderValves() {
     const saved = snapshotValveValues();
     valvesContainer.innerHTML = '';
-    for (let i = 1; i <= currentValvesCount; i++) {
-      valvesContainer.appendChild(createValveCard(i));
-    }
+    for (let i = 1; i <= currentValvesCount; i++) valvesContainer.appendChild(createValveCard(i));
     restoreValveValues(saved);
 
     valveCounterSpan.textContent = `${currentValvesCount} / ${MAX_VALVES}`;
     if (currentValvesCount >= MAX_VALVES) {
       addBtn.disabled = true;
-      addBtn.textContent = '❌ Максимум 10 клапанов';
+      addBtn.textContent = t.maxValves;
       addBtn.style.opacity = '0.6';
     } else {
       addBtn.disabled = false;
-      addBtn.textContent = '➕ Добавить клапан +';
+      addBtn.textContent = t.addValve;
       addBtn.style.opacity = '1';
     }
   }
 
-  // Добавление нового клапана
   function addValveHandler() {
     if (currentValvesCount < MAX_VALVES) {
       currentValvesCount++;
@@ -362,36 +281,24 @@
     addValveHandler();
   });
 
-  // Сбор данных по всем клапанам
   function collectValvesData() {
     const valvesArray = [];
     for (let i = 1; i <= currentValvesCount; i++) {
-      const drainEc = document.getElementById(`drain_ec_${i}`)?.value || '';
-      const drainPh = document.getElementById(`drain_ph_${i}`)?.value || '';
-      const dripperEc = document.getElementById(`dripper_ec_${i}`)?.value || '';
-      const dripperPh = document.getElementById(`dripper_ph_${i}`)?.value || '';
-      const dripperMl = document.getElementById(`dripper_ml_${i}`)?.value || '';
-
-      const drain1 = document.getElementById(`drain1_${i}`)?.value || '';
-      const drain2 = document.getElementById(`drain2_${i}`)?.value || '';
-      const drainLast = document.getElementById(`drain_last_${i}`)?.value || '';
-
       valvesArray.push({
         id: i,
-        drain_ec: drainEc,
-        drain_ph: drainPh,
-        dripper_ec: dripperEc,
-        dripper_ph: dripperPh,
-        dripper_ml: dripperMl,
-        drain_first_percent: drain1,
-        drain_second_percent: drain2,
-        drain_last_percent: drainLast
+        drain_ec: document.getElementById(`drain_ec_${i}`)?.value || '',
+        drain_ph: document.getElementById(`drain_ph_${i}`)?.value || '',
+        dripper_ec: document.getElementById(`dripper_ec_${i}`)?.value || '',
+        dripper_ph: document.getElementById(`dripper_ph_${i}`)?.value || '',
+        dripper_ml: document.getElementById(`dripper_ml_${i}`)?.value || '',
+        drain_first_percent: document.getElementById(`drain1_${i}`)?.value || '',
+        drain_second_percent: document.getElementById(`drain2_${i}`)?.value || '',
+        drain_last_percent: document.getElementById(`drain_last_${i}`)?.value || ''
       });
     }
     return valvesArray;
   }
 
-  // Сбор климатических данных
   function collectClimateData() {
     return {
       temperature: {
@@ -411,7 +318,6 @@
     };
   }
 
-  // Проверка на наличие хоть каких-то данных
   function hasAnyData() {
     const climate = collectClimateData();
     const hasClimate =
@@ -426,11 +332,8 @@
       v.drain_first_percent || v.drain_second_percent || v.drain_last_percent
     );
 
-    const wateringCount = document.getElementById('wateringCount')?.value || '';
-    const hasWateringCount = wateringCount !== '';
-
-    const notes = document.getElementById('notes')?.value || '';
-    const hasNotes = notes.trim().length > 0;
+    const hasWateringCount = (document.getElementById('wateringCount')?.value || '') !== '';
+    const hasNotes = (document.getElementById('notes')?.value || '').trim().length > 0;
 
     return hasClimate || hasValveData || hasWateringCount || hasNotes;
   }
@@ -441,17 +344,19 @@
     e.preventDefault();
 
     if (!tg) {
-      alert('❌ Откройте форму внутри Telegram WebApp');
+      alert(t.alertOpenInside);
       return;
     }
 
     if (!hasAnyData()) {
-      const confirmSend = confirm('Вы не заполнили ни одного поля. Отправить пустой отчет?');
+      const confirmSend = confirm(t.confirmEmpty);
       if (!confirmSend) return;
     }
 
     const currentUser = tg.initDataUnsafe?.user || {};
-    const userName = currentUser.first_name ? `${currentUser.first_name} ${currentUser.last_name || ''}`.trim() : 'Гость';
+    const userName = currentUser.first_name
+      ? `${currentUser.first_name} ${currentUser.last_name || ''}`.trim()
+      : t.guest;
 
     const payload = {
       version: '6.1',
@@ -471,30 +376,27 @@
       max_valves: MAX_VALVES,
       notes: document.getElementById('notes')?.value || '',
       fields_schema: {
-        temperature: 'день, ночь, средняя, мин, макс',
-        humidity: 'день, ночь, средняя, мин, макс',
-        watering_count: 'количество_поливов_за_день',
-        valve_fields: 'EC_дренажа, pH_дренажа, EC_капельницы, pH_капельницы, мл_капельницы, дренаж_1_полив_%, дренаж_2_полив_%, дренаж_последний_полив_%'
+        temperature: t.schemaTemp,
+        humidity: t.schemaHum,
+        watering_count: t.schemaWatering,
+        valve_fields: t.schemaValve
       }
     };
 
     try {
       tg.sendData(JSON.stringify(payload));
       const originalText = sendBtn.textContent;
-      sendBtn.textContent = '✅ Отправлено!';
+      sendBtn.textContent = t.sendDone;
       sendBtn.style.background = '#1b5e20';
       setTimeout(() => {
         sendBtn.textContent = originalText;
         sendBtn.style.background = '#2e7d32';
       }, 1500);
 
-      if (tg.HapticFeedback) {
-        tg.HapticFeedback.notificationOccurred('success');
-      }
-
+      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     } catch (err) {
       console.error('Ошибка отправки:', err);
-      alert('❌ Не удалось отправить отчет. Проверьте соединение.');
+      alert(t.sendError);
     }
   });
 
@@ -506,10 +408,19 @@
     else window.close?.();
   });
 
-  // Инициализация: рисуем первые 3 клапана
+  // user info
+  if (user && user.first_name) {
+    userInfoDiv.textContent = `✅ ${user.first_name} ${user.last_name || ''} · ID: ${user.id || '—'}`;
+  } else {
+    userInfoDiv.textContent = t.userOpenInBot;
+    userInfoDiv.style.background = "#fff2e0";
+    userInfoDiv.style.color = "#b85c00";
+  }
+
+  applyStaticTranslations();
   renderValves();
 
-  // Доп. стили для темной темы Telegram
+  // Темная тема
   const darkStyles = document.createElement('style');
   darkStyles.textContent = `
     @media (prefers-color-scheme: dark) {
@@ -530,7 +441,5 @@
     });
   });
 
-  console.log('Форма загружена. Добавлено поле количества поливов и новые поля дренаж/капельница на каждый клапан.');
+  console.log(t.loadedLog);
 </script>
-</body>
-</html>
