@@ -203,40 +203,34 @@
 </div>
 
 <script>
-  const tg = window.Telegram?.WebApp;
+(function () {
+  var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
   if (tg) { tg.ready(); tg.expand(); }
 
-  const I18N = {
+  var I18N = {
     ru: {
       pageTitle: "AgroBot Monitoring PRO | 3 дренажа на клапан",
       appTitle: "🌾 Агро Мониторинг PRO",
-      userAuthLoading: "⏳ Авторизация...",
       userOpenInBot: "⚠️ Откройте через Telegram-бота (WebApp)",
       subHintTop: "🚰 Дренаж: 1-й полив | 2-й полив | последний полив",
-
       tempTitle: "🌡️ Температура (°C)",
       humTitle: "💧 Влажность (%)",
       params5: "5 параметров",
-
       tempDay: "День",
       tempNight: "Ночь",
       tempAvg: "Средняя",
       tempMin: "Мин",
       tempMax: "Макс",
-
       valvesTitle: "🚿 Клапаны",
       addValve: "➕ Добавить клапан +",
       maxValves: "❌ Максимум 10 клапанов",
       wateringCount: "Количество поливов (за день)",
       valvesHint: "Минимум 3, максимум 10. Для каждого: EC/pH дренажа, EC/pH капельницы, мл капельницы, дренаж 1-го, 2-го и последнего полива.",
-
       notesTitle: "📝 Журнал наблюдений",
       notesPlaceholder: "Доп. информация, проблемы, калибровка, замечания...",
-
       sendBtn: "📤 ОТПРАВИТЬ ОТЧЕТ",
       closeBtn: "🔒 ЗАКРЫТЬ",
       subHintBottom: "* Все данные отправляются боту. Дренаж 1,2 и последнего полива — отдельные поля.",
-
       valveBadge: "🚰 Клапан {n}",
       valveSubtitle: "Дренаж + капельница",
       phDrain: "pH дренажа",
@@ -248,49 +242,40 @@
       drain1: "1-й полив, %",
       drain2: "2-й полив, %",
       drainLast: "Последний полив, %",
-
       alertOpenInside: "❌ Откройте форму внутри Telegram WebApp",
       confirmEmpty: "Вы не заполнили ни одного поля. Отправить пустой отчет?",
       sendDone: "✅ Отправлено!",
       sendError: "❌ Не удалось отправить отчет. Проверьте соединение.",
       guest: "Гость",
-
       schemaTemp: "день, ночь, средняя, мин, макс",
       schemaHum: "день, ночь, средняя, мин, макс",
       schemaWatering: "количество_поливов_за_день",
       schemaValve: "EC_дренажа, pH_дренажа, EC_капельницы, pH_капельницы, мл_капельницы, дренаж_1_полив_%, дренаж_2_полив_%, дренаж_последний_полив_%",
-      loadedLog: "Форма загружена. Добавлено поле количества поливов и новые поля дренаж/капельница на каждый клапан."
+      loadedLog: "Форма загружена."
     },
     hy: {
       pageTitle: "AgroBot Monitoring PRO | 3 դրենաժ յուրաքանչյուր փականի համար",
       appTitle: "🌾 Ագրո մոնիթորինգ PRO",
-      userAuthLoading: "⏳ Նույնականացում...",
       userOpenInBot: "⚠️ Բացեք Telegram բոտից (WebApp)",
       subHintTop: "🚰 Դրենաժ՝ 1-ին ջրում | 2-րդ ջրում | վերջին ջրում",
-
       tempTitle: "🌡️ Ջերմաստիճան (°C)",
       humTitle: "💧 Խոնավություն (%)",
       params5: "5 պարամետր",
-
       tempDay: "Ցերեկ",
       tempNight: "Գիշեր",
       tempAvg: "Միջին",
       tempMin: "Նվազ.",
       tempMax: "Առավ.",
-
       valvesTitle: "🚿 Փականներ",
       addValve: "➕ Ավելացնել փական +",
       maxValves: "❌ Առավելագույնը 10 փական",
       wateringCount: "Ջրումների քանակը (օրական)",
       valvesHint: "Նվազագույնը 3, առավելագույնը 10։ Յուրաքանչյուրի համար՝ EC/pH դրենաժի, EC/pH կաթիլի, կաթիլի մլ, 1-ին, 2-րդ և վերջին ջրման դրենաժ։",
-
       notesTitle: "📝 Դիտարկումների գրանցում",
       notesPlaceholder: "Լրացուցիչ տեղեկություն, խնդիրներ, կալիբրավորում, նշումներ...",
-
       sendBtn: "📤 ՈՒՂԱՐԿԵԼ ՀԱՇՎԵՏՎՈՒԹՅՈՒՆԸ",
       closeBtn: "🔒 ՓԱԿԵԼ",
-      subHintBottom: "* Բոլոր տվյալները ուղարկվում են բոտին։ 1-ին, 2-րդ և վերջին ջրման դրենաժը՝ առանձին դաշտերով։",
-
+      subHintBottom: "* Բոլոր տվյալները ուղարկվում են բոտին։",
       valveBadge: "🚰 Փական {n}",
       valveSubtitle: "Դրենաժ + կաթիլ",
       phDrain: "pH դրենաժի",
@@ -302,350 +287,433 @@
       drain1: "1-ին ջրում, %",
       drain2: "2-րդ ջրում, %",
       drainLast: "Վերջին ջրում, %",
-
       alertOpenInside: "❌ Բացեք ձևը Telegram WebApp-ի ներսում",
       confirmEmpty: "Դուք ոչ մի դաշտ չեք լրացրել։ Ուղարկե՞լ դատարկ հաշվետվություն։",
       sendDone: "✅ Ուղարկված է!",
-      sendError: "❌ Չհաջողվեց ուղարկել հաշվետվությունը։ Ստուգեք կապը։",
+      sendError: "❌ Չհաջողվեց ուղարկել հաշվետվությունը։",
       guest: "Հյուր",
-
       schemaTemp: "ցերեկ, գիշեր, միջին, նվազ., առավ.",
       schemaHum: "ցերեկ, գիշեր, միջին, նվազ., առավ.",
       schemaWatering: "օրական_ջրումների_քանակ",
       schemaValve: "EC_դրենաժ, pH_դրենաժ, EC_կաթիլ, pH_կաթիլ, մլ_կաթիլ, դրենաժ_1_ջրում_%, դրենաժ_2_ջրում_%, դրենաժ_վերջին_ջրում_%",
-      loadedLog: "Ձևը բեռնվել է։ Ավելացվել են ջրումների քանակի և նոր դրենաժ/կաթիլ դաշտերը յուրաքանչյուր փականի համար։"
+      loadedLog: "Ձևը բեռնվել է։"
     }
   };
 
   function detectLang() {
-    const code = (tg?.initDataUnsafe?.user?.language_code || "").toLowerCase();
-    return code.startsWith("hy") ? "hy" : "ru";
-  }
-
-  const lang = detectLang();
-  const t = I18N[lang];
-  document.documentElement.lang = lang;
-  document.title = t.pageTitle;
-
-  // ---- пользовательская информация ----
-  const user = tg?.initDataUnsafe?.user;
-  const userInfoDiv = document.getElementById('userInfo');
-
-  // ---- управление клапанами (от 3 до 10) ----
-  let currentValvesCount = 3;
-  const MAX_VALVES = 10;
-
-  const valvesContainer = document.getElementById('valvesContainer');
-  const addBtn = document.getElementById('addValveBtn');
-  const valveCounterSpan = document.getElementById('valveCounter');
-
-  function applyStaticTranslations() {
-    const appTitle = document.querySelector('.section h2');
-    if (appTitle) appTitle.textContent = t.appTitle;
-
-    const subHints = document.querySelectorAll('.sub-hint');
-    if (subHints[0]) subHints[0].textContent = t.subHintTop;
-    if (subHints[1]) subHints[1].textContent = t.subHintBottom;
-
-    const sectionTitles = document.querySelectorAll('.section h3');
-    if (sectionTitles[0]) sectionTitles[0].innerHTML = `${t.tempTitle} <span class="counter-badge">${t.params5}</span>`;
-    if (sectionTitles[1]) sectionTitles[1].innerHTML = `${t.humTitle} <span class="counter-badge">${t.params5}</span>`;
-    if (sectionTitles[2]) sectionTitles[2].innerHTML = `${t.valvesTitle} <span id="valveCounter" class="counter-badge">${currentValvesCount} / ${MAX_VALVES}</span>`;
-    if (sectionTitles[3]) sectionTitles[3].textContent = t.notesTitle;
-
-    document.getElementById('temp_day').placeholder = t.tempDay;
-    document.getElementById('temp_night').placeholder = t.tempNight;
-    document.getElementById('temp_avg').placeholder = t.tempAvg;
-    document.getElementById('temp_min').placeholder = t.tempMin;
-    document.getElementById('temp_max').placeholder = t.tempMax;
-
-    document.getElementById('hum_day').placeholder = t.tempDay;
-    document.getElementById('hum_night').placeholder = t.tempNight;
-    document.getElementById('hum_avg').placeholder = t.tempAvg;
-    document.getElementById('hum_min').placeholder = t.tempMin;
-    document.getElementById('hum_max').placeholder = t.tempMax;
-
-    document.getElementById('wateringCount').placeholder = t.wateringCount;
-    document.querySelector('.hint').textContent = t.valvesHint;
-
-    document.getElementById('notes').placeholder = t.notesPlaceholder;
-    document.getElementById('sendBtn').textContent = t.sendBtn;
-    document.getElementById('closeBtn').textContent = t.closeBtn;
-  }
-
-  // Карточка клапана
-  function createValveCard(valveNumber) {
-    const card = document.createElement('div');
-    card.className = 'valve-card';
-    card.setAttribute('data-valve-id', valveNumber);
-
-    const drainEcId = `drain_ec_${valveNumber}`;
-    const drainPhId = `drain_ph_${valveNumber}`;
-    const dripperEcId = `dripper_ec_${valveNumber}`;
-    const dripperPhId = `dripper_ph_${valveNumber}`;
-    const dripperMlId = `dripper_ml_${valveNumber}`;
-
-    const drain1Id = `drain1_${valveNumber}`;
-    const drain2Id = `drain2_${valveNumber}`;
-    const drainLastId = `drain_last_${valveNumber}`;
-
-    card.innerHTML = `
-      <div class="valve-title">
-        <span class="badge-valve">${t.valveBadge.replace('{n}', valveNumber)}</span>
-        <span style="font-size:12px; font-weight:normal;">${t.valveSubtitle}</span>
-      </div>
-
-      <div class="ec-ph-row">
-        <input type="number" id="${drainEcId}" step="0.1" placeholder="${t.ecDrain}">
-        <input type="number" id="${drainPhId}" step="0.1" placeholder="${t.phDrain}">
-      </div>
-
-      <div class="ec-ph-row">
-        <input type="number" id="${dripperEcId}" step="0.1" placeholder="${t.ecDripper}">
-        <input type="number" id="${dripperPhId}" step="0.1" placeholder="${t.phDripper}">
-      </div>
-
-      <div class="row">
-        <input type="number" id="${dripperMlId}" step="0.1" placeholder="${t.mlDripper}">
-      </div>
-
-      <div class="drain-label">${t.drainByWatering}</div>
-      <div class="drain-group">
-        <input type="number" id="${drain1Id}" step="0.1" placeholder="${t.drain1}">
-        <input type="number" id="${drain2Id}" step="0.1" placeholder="${t.drain2}">
-        <input type="number" id="${drainLastId}" step="0.1" placeholder="${t.drainLast}">
-      </div>
-    `;
-    return card;
-  }
-
-  function snapshotValveValues() {
-    const saved = {};
-    for (let i = 1; i <= currentValvesCount; i++) {
-      saved[i] = {
-        drain_ec: document.getElementById(`drain_ec_${i}`)?.value || '',
-        drain_ph: document.getElementById(`drain_ph_${i}`)?.value || '',
-        dripper_ec: document.getElementById(`dripper_ec_${i}`)?.value || '',
-        dripper_ph: document.getElementById(`dripper_ph_${i}`)?.value || '',
-        dripper_ml: document.getElementById(`dripper_ml_${i}`)?.value || '',
-        drain1: document.getElementById(`drain1_${i}`)?.value || '',
-        drain2: document.getElementById(`drain2_${i}`)?.value || '',
-        drain_last: document.getElementById(`drain_last_${i}`)?.value || ''
-      };
+    var code = "";
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code) {
+      code = String(tg.initDataUnsafe.user.language_code).toLowerCase();
     }
-    return saved;
+    return code.indexOf("hy") === 0 ? "hy" : "ru";
   }
 
-  function restoreValveValues(saved) {
-    Object.keys(saved).forEach(key => {
-      const i = Number(key);
-      const vals = saved[i];
-      if (document.getElementById(`drain_ec_${i}`)) document.getElementById(`drain_ec_${i}`).value = vals.drain_ec;
-      if (document.getElementById(`drain_ph_${i}`)) document.getElementById(`drain_ph_${i}`).value = vals.drain_ph;
-      if (document.getElementById(`dripper_ec_${i}`)) document.getElementById(`dripper_ec_${i}`).value = vals.dripper_ec;
-      if (document.getElementById(`dripper_ph_${i}`)) document.getElementById(`dripper_ph_${i}`).value = vals.dripper_ph;
-      if (document.getElementById(`dripper_ml_${i}`)) document.getElementById(`dripper_ml_${i}`).value = vals.dripper_ml;
-      if (document.getElementById(`drain1_${i}`)) document.getElementById(`drain1_${i}`).value = vals.drain1;
-      if (document.getElementById(`drain2_${i}`)) document.getElementById(`drain2_${i}`).value = vals.drain2;
-      if (document.getElementById(`drain_last_${i}`)) document.getElementById(`drain_last_${i}`).value = vals.drain_last;
-    });
+  function showBootError(msg) {
+    document.body.innerHTML =
+      '<div style="padding:16px;font-family:sans-serif;">' +
+      "<b>WebApp error</b><br/>" + String(msg) +
+      "</div>";
   }
 
-  function renderValves() {
-    const saved = snapshotValveValues();
-    valvesContainer.innerHTML = '';
-    for (let i = 1; i <= currentValvesCount; i++) valvesContainer.appendChild(createValveCard(i));
-    restoreValveValues(saved);
+  try {
+    var lang = detectLang();
+    var t = I18N[lang];
+    document.documentElement.lang = lang;
+    document.title = t.pageTitle;
 
-    valveCounterSpan.textContent = `${currentValvesCount} / ${MAX_VALVES}`;
-    if (currentValvesCount >= MAX_VALVES) {
-      addBtn.disabled = true;
-      addBtn.textContent = t.maxValves;
-      addBtn.style.opacity = '0.6';
-    } else {
-      addBtn.disabled = false;
-      addBtn.textContent = t.addValve;
-      addBtn.style.opacity = '1';
+    var user = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
+    var userInfoDiv = document.getElementById("userInfo");
+    if (!userInfoDiv) throw new Error("Нет #userInfo в HTML");
+
+    var currentValvesCount = 3;
+    var MAX_VALVES = 10;
+
+    var valvesContainer = document.getElementById("valvesContainer");
+    var addBtn = document.getElementById("addValveBtn");
+    if (!valvesContainer || !addBtn) throw new Error("Нет valvesContainer / addValveBtn");
+
+    function getValveCounterEl() {
+      return document.getElementById("valveCounter");
     }
-  }
 
-  function addValveHandler() {
-    if (currentValvesCount < MAX_VALVES) {
-      currentValvesCount++;
-      renderValves();
-      setTimeout(() => {
-        const lastCard = valvesContainer.lastChild;
-        if (lastCard) lastCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 50);
+    function applyStaticTranslations() {
+      var appTitle = document.querySelector(".section h2");
+      if (appTitle) appTitle.textContent = t.appTitle;
+
+      var subHints = document.querySelectorAll(".sub-hint");
+      if (subHints[0]) subHints[0].textContent = t.subHintTop;
+      if (subHints[1]) subHints[1].textContent = t.subHintBottom;
+
+      var sectionTitles = document.querySelectorAll(".section h3");
+      if (sectionTitles[0])
+        sectionTitles[0].innerHTML = t.tempTitle + ' <span class="counter-badge">' + t.params5 + "</span>";
+      if (sectionTitles[1])
+        sectionTitles[1].innerHTML = t.humTitle + ' <span class="counter-badge">' + t.params5 + "</span>";
+      if (sectionTitles[2])
+        sectionTitles[2].innerHTML =
+          t.valvesTitle +
+          ' <span id="valveCounter" class="counter-badge">' +
+          currentValvesCount +
+          " / " +
+          MAX_VALVES +
+          "</span>";
+      if (sectionTitles[3]) sectionTitles[3].textContent = t.notesTitle;
+
+      document.getElementById("temp_day").placeholder = t.tempDay;
+      document.getElementById("temp_night").placeholder = t.tempNight;
+      document.getElementById("temp_avg").placeholder = t.tempAvg;
+      document.getElementById("temp_min").placeholder = t.tempMin;
+      document.getElementById("temp_max").placeholder = t.tempMax;
+
+      document.getElementById("hum_day").placeholder = t.tempDay;
+      document.getElementById("hum_night").placeholder = t.tempNight;
+      document.getElementById("hum_avg").placeholder = t.tempAvg;
+      document.getElementById("hum_min").placeholder = t.tempMin;
+      document.getElementById("hum_max").placeholder = t.tempMax;
+
+      document.getElementById("wateringCount").placeholder = t.wateringCount;
+
+      var hintEl = document.querySelector(".hint");
+      if (hintEl) hintEl.textContent = t.valvesHint;
+
+      document.getElementById("notes").placeholder = t.notesPlaceholder;
+      document.getElementById("sendBtn").textContent = t.sendBtn;
+      document.getElementById("closeBtn").textContent = t.closeBtn;
     }
-  }
 
-  addBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    addValveHandler();
-  });
+    function createValveCard(valveNumber) {
+      var card = document.createElement("div");
+      card.className = "valve-card";
+      card.setAttribute("data-valve-id", String(valveNumber));
 
-  function collectValvesData() {
-    const valvesArray = [];
-    for (let i = 1; i <= currentValvesCount; i++) {
-      valvesArray.push({
-        id: i,
-        drain_ec: document.getElementById(`drain_ec_${i}`)?.value || '',
-        drain_ph: document.getElementById(`drain_ph_${i}`)?.value || '',
-        dripper_ec: document.getElementById(`dripper_ec_${i}`)?.value || '',
-        dripper_ph: document.getElementById(`dripper_ph_${i}`)?.value || '',
-        dripper_ml: document.getElementById(`dripper_ml_${i}`)?.value || '',
-        drain_first_percent: document.getElementById(`drain1_${i}`)?.value || '',
-        drain_second_percent: document.getElementById(`drain2_${i}`)?.value || '',
-        drain_last_percent: document.getElementById(`drain_last_${i}`)?.value || ''
+      var drainEcId = "drain_ec_" + valveNumber;
+      var drainPhId = "drain_ph_" + valveNumber;
+      var dripperEcId = "dripper_ec_" + valveNumber;
+      var dripperPhId = "dripper_ph_" + valveNumber;
+      var dripperMlId = "dripper_ml_" + valveNumber;
+      var drain1Id = "drain1_" + valveNumber;
+      var drain2Id = "drain2_" + valveNumber;
+      var drainLastId = "drain_last_" + valveNumber;
+
+      card.innerHTML =
+        '<div class="valve-title">' +
+        '<span class="badge-valve">' +
+        t.valveBadge.replace("{n}", String(valveNumber)) +
+        "</span>" +
+        '<span style="font-size:12px; font-weight:normal;">' +
+        t.valveSubtitle +
+        "</span>" +
+        "</div>" +
+        '<div class="ec-ph-row">' +
+        '<input type="number" id="' +
+        drainEcId +
+        '" step="0.1" placeholder="' +
+        t.ecDrain +
+        '">' +
+        '<input type="number" id="' +
+        drainPhId +
+        '" step="0.1" placeholder="' +
+        t.phDrain +
+        '">' +
+        "</div>" +
+        '<div class="ec-ph-row">' +
+        '<input type="number" id="' +
+        dripperEcId +
+        '" step="0.1" placeholder="' +
+        t.ecDripper +
+        '">' +
+        '<input type="number" id="' +
+        dripperPhId +
+        '" step="0.1" placeholder="' +
+        t.phDripper +
+        '">' +
+        "</div>" +
+        '<div class="row">' +
+        '<input type="number" id="' +
+        dripperMlId +
+        '" step="0.1" placeholder="' +
+        t.mlDripper +
+        '">' +
+        "</div>" +
+        '<div class="drain-label">' +
+        t.drainByWatering +
+        "</div>" +
+        '<div class="drain-group">' +
+        '<input type="number" id="' +
+        drain1Id +
+        '" step="0.1" placeholder="' +
+        t.drain1 +
+        '">' +
+        '<input type="number" id="' +
+        drain2Id +
+        '" step="0.1" placeholder="' +
+        t.drain2 +
+        '">' +
+        '<input type="number" id="' +
+        drainLastId +
+        '" step="0.1" placeholder="' +
+        t.drainLast +
+        '">' +
+        "</div>";
+
+      return card;
+    }
+
+    function snapshotValveValues() {
+      var saved = {};
+      for (var i = 1; i <= currentValvesCount; i++) {
+        saved[i] = {
+          drain_ec: (document.getElementById("drain_ec_" + i) || {}).value || "",
+          drain_ph: (document.getElementById("drain_ph_" + i) || {}).value || "",
+          dripper_ec: (document.getElementById("dripper_ec_" + i) || {}).value || "",
+          dripper_ph: (document.getElementById("dripper_ph_" + i) || {}).value || "",
+          dripper_ml: (document.getElementById("dripper_ml_" + i) || {}).value || "",
+          drain1: (document.getElementById("drain1_" + i) || {}).value || "",
+          drain2: (document.getElementById("drain2_" + i) || {}).value || "",
+          drain_last: (document.getElementById("drain_last_" + i) || {}).value || ""
+        };
+      }
+      return saved;
+    }
+
+    function restoreValveValues(saved) {
+      Object.keys(saved).forEach(function (key) {
+        var i = Number(key);
+        var vals = saved[i];
+        var el;
+        el = document.getElementById("drain_ec_" + i);
+        if (el) el.value = vals.drain_ec;
+        el = document.getElementById("drain_ph_" + i);
+        if (el) el.value = vals.drain_ph;
+        el = document.getElementById("dripper_ec_" + i);
+        if (el) el.value = vals.dripper_ec;
+        el = document.getElementById("dripper_ph_" + i);
+        if (el) el.value = vals.dripper_ph;
+        el = document.getElementById("dripper_ml_" + i);
+        if (el) el.value = vals.dripper_ml;
+        el = document.getElementById("drain1_" + i);
+        if (el) el.value = vals.drain1;
+        el = document.getElementById("drain2_" + i);
+        if (el) el.value = vals.drain2;
+        el = document.getElementById("drain_last_" + i);
+        if (el) el.value = vals.drain_last;
       });
     }
-    return valvesArray;
-  }
 
-  function collectClimateData() {
-    return {
-      temperature: {
-        day: document.getElementById('temp_day')?.value || '',
-        night: document.getElementById('temp_night')?.value || '',
-        avg: document.getElementById('temp_avg')?.value || '',
-        min: document.getElementById('temp_min')?.value || '',
-        max: document.getElementById('temp_max')?.value || ''
-      },
-      humidity: {
-        day: document.getElementById('hum_day')?.value || '',
-        night: document.getElementById('hum_night')?.value || '',
-        avg: document.getElementById('hum_avg')?.value || '',
-        min: document.getElementById('hum_min')?.value || '',
-        max: document.getElementById('hum_max')?.value || ''
+    function renderValves() {
+      var saved = snapshotValveValues();
+      valvesContainer.innerHTML = "";
+      for (var i = 1; i <= currentValvesCount; i++) {
+        valvesContainer.appendChild(createValveCard(i));
       }
-    };
-  }
+      restoreValveValues(saved);
 
-  function hasAnyData() {
-    const climate = collectClimateData();
-    const hasClimate =
-      climate.temperature.day || climate.temperature.night || climate.temperature.avg ||
-      climate.temperature.min || climate.temperature.max ||
-      climate.humidity.day || climate.humidity.night || climate.humidity.avg ||
-      climate.humidity.min || climate.humidity.max;
+      var counter = getValveCounterEl();
+      if (counter) counter.textContent = currentValvesCount + " / " + MAX_VALVES;
 
-    const valves = collectValvesData();
-    const hasValveData = valves.some(v =>
-      v.drain_ec || v.drain_ph || v.dripper_ec || v.dripper_ph || v.dripper_ml ||
-      v.drain_first_percent || v.drain_second_percent || v.drain_last_percent
-    );
-
-    const hasWateringCount = (document.getElementById('wateringCount')?.value || '') !== '';
-    const hasNotes = (document.getElementById('notes')?.value || '').trim().length > 0;
-
-    return hasClimate || hasValveData || hasWateringCount || hasNotes;
-  }
-
-  // ---- ОТПРАВКА ОТЧЕТА ----
-  const sendBtn = document.getElementById('sendBtn');
-  sendBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-
-    if (!tg) {
-      alert(t.alertOpenInside);
-      return;
-    }
-
-    if (!hasAnyData()) {
-      const confirmSend = confirm(t.confirmEmpty);
-      if (!confirmSend) return;
-    }
-
-    const currentUser = tg.initDataUnsafe?.user || {};
-    const userName = currentUser.first_name
-      ? `${currentUser.first_name} ${currentUser.last_name || ''}`.trim()
-      : t.guest;
-
-    const payload = {
-      version: '6.1',
-      timestamp: new Date().toISOString(),
-      init_data: tg.initData || '',
-      user: {
-        id: currentUser.id || null,
-        name: userName,
-        username: currentUser.username || null,
-        first_name: currentUser.first_name || '',
-        last_name: currentUser.last_name || ''
-      },
-      climate: collectClimateData(),
-      watering_count: document.getElementById('wateringCount')?.value || '',
-      valves: collectValvesData(),
-      total_valves_count: currentValvesCount,
-      max_valves: MAX_VALVES,
-      notes: document.getElementById('notes')?.value || '',
-      fields_schema: {
-        temperature: t.schemaTemp,
-        humidity: t.schemaHum,
-        watering_count: t.schemaWatering,
-        valve_fields: t.schemaValve
+      if (currentValvesCount >= MAX_VALVES) {
+        addBtn.disabled = true;
+        addBtn.textContent = t.maxValves;
+        addBtn.style.opacity = "0.6";
+      } else {
+        addBtn.disabled = false;
+        addBtn.textContent = t.addValve;
+        addBtn.style.opacity = "1";
       }
-    };
-
-    try {
-      tg.sendData(JSON.stringify(payload));
-      const originalText = sendBtn.textContent;
-      sendBtn.textContent = t.sendDone;
-      sendBtn.style.background = '#1b5e20';
-      setTimeout(() => {
-        sendBtn.textContent = originalText;
-        sendBtn.style.background = '#2e7d32';
-      }, 1500);
-
-      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-    } catch (err) {
-      console.error('Ошибка отправки:', err);
-      alert(t.sendError);
     }
-  });
 
-  // Закрытие WebApp
-  const closeBtn = document.getElementById('closeBtn');
-  closeBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (tg && tg.close) tg.close();
-    else window.close?.();
-  });
-
-  // user info
-  if (user && user.first_name) {
-    userInfoDiv.textContent = `✅ ${user.first_name} ${user.last_name || ''} · ID: ${user.id || '—'}`;
-  } else {
-    userInfoDiv.textContent = t.userOpenInBot;
-    userInfoDiv.style.background = "#fff2e0";
-    userInfoDiv.style.color = "#b85c00";
-  }
-
-  applyStaticTranslations();
-  renderValves();
-
-  // Темная тема
-  const darkStyles = document.createElement('style');
-  darkStyles.textContent = `
-    @media (prefers-color-scheme: dark) {
-      body { background: var(--tg-theme-bg-color, #121212); }
-      .section, .valve-card { background: var(--tg-theme-secondary-bg-color, #1e2a3a); border-color: #2d3a48; }
-      input, textarea { background: #0f1724; border-color: #334155; color: #e2e8f0; }
-      .drain-group input { background: #1e2a2a; border-color: #5a6e3e; }
-      .user { background: #1e3a2f; color: #b9f6ca; }
-      .counter-badge { background: #2d3748; color: #a5d6a7; }
-    }
-  `;
-  document.head.appendChild(darkStyles);
-
-  // Плавный скролл при фокусе
-  document.querySelectorAll('input, textarea').forEach(el => {
-    el.addEventListener('focus', (e) => {
-      setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
+    addBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      if (currentValvesCount < MAX_VALVES) {
+        currentValvesCount++;
+        renderValves();
+        setTimeout(function () {
+          var lastCard = valvesContainer.lastChild;
+          if (lastCard) lastCard.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 50);
+      }
     });
-  });
 
-  console.log(t.loadedLog);
+    function collectValvesData() {
+      var valvesArray = [];
+      for (var i = 1; i <= currentValvesCount; i++) {
+        valvesArray.push({
+          id: i,
+          drain_ec: (document.getElementById("drain_ec_" + i) || {}).value || "",
+          drain_ph: (document.getElementById("drain_ph_" + i) || {}).value || "",
+          dripper_ec: (document.getElementById("dripper_ec_" + i) || {}).value || "",
+          dripper_ph: (document.getElementById("dripper_ph_" + i) || {}).value || "",
+          dripper_ml: (document.getElementById("dripper_ml_" + i) || {}).value || "",
+          drain_first_percent: (document.getElementById("drain1_" + i) || {}).value || "",
+          drain_second_percent: (document.getElementById("drain2_" + i) || {}).value || "",
+          drain_last_percent: (document.getElementById("drain_last_" + i) || {}).value || ""
+        });
+      }
+      return valvesArray;
+    }
+
+    function collectClimateData() {
+      return {
+        temperature: {
+          day: (document.getElementById("temp_day") || {}).value || "",
+          night: (document.getElementById("temp_night") || {}).value || "",
+          avg: (document.getElementById("temp_avg") || {}).value || "",
+          min: (document.getElementById("temp_min") || {}).value || "",
+          max: (document.getElementById("temp_max") || {}).value || ""
+        },
+        humidity: {
+          day: (document.getElementById("hum_day") || {}).value || "",
+          night: (document.getElementById("hum_night") || {}).value || "",
+          avg: (document.getElementById("hum_avg") || {}).value || "",
+          min: (document.getElementById("hum_min") || {}).value || "",
+          max: (document.getElementById("hum_max") || {}).value || ""
+        }
+      };
+    }
+
+    function hasAnyData() {
+      var climate = collectClimateData();
+      var hasClimate =
+        climate.temperature.day ||
+        climate.temperature.night ||
+        climate.temperature.avg ||
+        climate.temperature.min ||
+        climate.temperature.max ||
+        climate.humidity.day ||
+        climate.humidity.night ||
+        climate.humidity.avg ||
+        climate.humidity.min ||
+        climate.humidity.max;
+
+      var valves = collectValvesData();
+      var hasValveData = false;
+      for (var vi = 0; vi < valves.length; vi++) {
+        var v = valves[vi];
+        if (
+          v.drain_ec ||
+          v.drain_ph ||
+          v.dripper_ec ||
+          v.dripper_ph ||
+          v.dripper_ml ||
+          v.drain_first_percent ||
+          v.drain_second_percent ||
+          v.drain_last_percent
+        ) {
+          hasValveData = true;
+          break;
+        }
+      }
+
+      var wc = (document.getElementById("wateringCount") || {}).value || "";
+      var notes = (document.getElementById("notes") || {}).value || "";
+
+      return hasClimate || hasValveData || wc !== "" || notes.trim().length > 0;
+    }
+
+    var sendBtn = document.getElementById("sendBtn");
+    sendBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      if (!tg) {
+        alert(t.alertOpenInside);
+        return;
+      }
+
+      if (!hasAnyData()) {
+        if (!confirm(t.confirmEmpty)) return;
+      }
+
+      var currentUser = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : {};
+      var userName = currentUser.first_name
+        ? (currentUser.first_name + " " + (currentUser.last_name || "")).trim()
+        : t.guest;
+
+      var payload = {
+        version: "6.1",
+        timestamp: new Date().toISOString(),
+        init_data: tg.initData || "",
+        user: {
+          id: currentUser.id || null,
+          name: userName,
+          username: currentUser.username || null,
+          first_name: currentUser.first_name || "",
+          last_name: currentUser.last_name || ""
+        },
+        climate: collectClimateData(),
+        watering_count: (document.getElementById("wateringCount") || {}).value || "",
+        valves: collectValvesData(),
+        total_valves_count: currentValvesCount,
+        max_valves: MAX_VALVES,
+        notes: (document.getElementById("notes") || {}).value || "",
+        fields_schema: {
+          temperature: t.schemaTemp,
+          humidity: t.schemaHum,
+          watering_count: t.schemaWatering,
+          valve_fields: t.schemaValve
+        }
+      };
+
+      try {
+        tg.sendData(JSON.stringify(payload));
+        var originalText = sendBtn.textContent;
+        sendBtn.textContent = t.sendDone;
+        sendBtn.style.background = "#1b5e20";
+        setTimeout(function () {
+          sendBtn.textContent = originalText;
+          sendBtn.style.background = "#2e7d32";
+        }, 1500);
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
+      } catch (err) {
+        console.error(err);
+        alert(t.sendError);
+      }
+    });
+
+    document.getElementById("closeBtn").addEventListener("click", function (e) {
+      e.preventDefault();
+      if (tg && tg.close) tg.close();
+      else if (window.close) window.close();
+    });
+
+    if (user && user.first_name) {
+      userInfoDiv.textContent =
+        "✅ " + user.first_name + " " + (user.last_name || "") + " · ID: " + (user.id || "—");
+    } else {
+      userInfoDiv.textContent = t.userOpenInBot;
+      userInfoDiv.style.background = "#fff2e0";
+      userInfoDiv.style.color = "#b85c00";
+    }
+
+    applyStaticTranslations();
+    renderValves();
+
+    var darkStyles = document.createElement("style");
+    darkStyles.textContent =
+      "@media (prefers-color-scheme: dark) {" +
+      "body { background: var(--tg-theme-bg-color, #121212); }" +
+      ".section, .valve-card { background: var(--tg-theme-secondary-bg-color, #1e2a3a); border-color: #2d3a48; }" +
+      "input, textarea { background: #0f1724; border-color: #334155; color: #e2e8f0; }" +
+      ".drain-group input { background: #1e2a2a; border-color: #5a6e3e; }" +
+      ".user { background: #1e3a2f; color: #b9f6ca; }" +
+      ".counter-badge { background: #2d3748; color: #a5d6a7; }" +
+      "}";
+    document.head.appendChild(darkStyles);
+
+    var inputs = document.querySelectorAll("input, textarea");
+    for (var ii = 0; ii < inputs.length; ii++) {
+      inputs[ii].addEventListener("focus", function (e) {
+        setTimeout(function () {
+          e.target.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 80);
+      });
+    }
+
+    console.log(t.loadedLog);
+  } catch (e) {
+    console.error(e);
+    showBootError(e && e.message ? e.message : e);
+  }
+})();
 </script>
 </body>
 </html>
