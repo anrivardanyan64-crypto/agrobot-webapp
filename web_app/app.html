@@ -301,6 +301,11 @@
   };
 
   function detectLang() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var fromUrl = params.get("lang");
+      if (fromUrl === "hy" || fromUrl === "ru") return fromUrl;
+    } catch (e) {}
     var code = "";
     if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code) {
       code = String(tg.initDataUnsafe.user.language_code).toLowerCase();
