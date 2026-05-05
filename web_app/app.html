@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>AgroBot Monitoring PRO | 3 дренажа на клапан</title>
+  <title>AgroBot Monitoring PRO</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -82,6 +82,7 @@
       display: flex;
       gap: 10px;
       margin-top: 8px;
+      margin-bottom: 8px;
       flex-wrap: wrap;
     }
     .drain-group input {
@@ -153,7 +154,6 @@
     <div class="sub-hint">🚰 Дренаж: 1-й полив | 2-й полив | последний полив</div>
   </div>
 
-  <!-- ТЕМПЕРАТУРА: 5 полей -->
   <div class="section">
     <h3>🌡️ Температура (°C) <span class="counter-badge">5 параметров</span></h3>
     <div class="row">
@@ -165,7 +165,6 @@
     </div>
   </div>
 
-  <!-- ВЛАЖНОСТЬ: 5 полей -->
   <div class="section">
     <h3>💧 Влажность (%) <span class="counter-badge">5 параметров</span></h3>
     <div class="row">
@@ -177,21 +176,18 @@
     </div>
   </div>
 
-  <!-- КЛАПАНЫ -->
   <div class="section">
     <h3>🚿 Клапаны <span id="valveCounter" class="counter-badge">3 / 10</span></h3>
 
-    <!-- ОБЩЕЕ ПОЛЕ ПЕРЕД КЛАПАНАМИ -->
     <div class="row">
       <input id="wateringCount" type="number" step="1" min="0" placeholder="Количество поливов (за день)">
     </div>
 
     <div id="valvesContainer"></div>
     <button id="addValveBtn" type="button" class="btn-add">➕ Добавить клапан +</button>
-    <div class="hint">Минимум 3, максимум 10. Для каждого: EC/pH дренажа, EC/pH капельницы, мл капельницы, дренаж 1-го, 2-го и последнего полива.</div>
+    <div class="hint">Минимум 3, максимум 10. Для каждого: дренаж 1-го/2-го/последнего полива (% + EC/pH), а EC/pH капельницы и мл — только в блоке последнего полива.</div>
   </div>
 
-  <!-- ЗАМЕТКИ -->
   <div class="section">
     <h3>📝 Журнал наблюдений</h3>
     <textarea id="notes" rows="3" placeholder="Доп. информация, проблемы, калибровка, замечания..."></textarea>
@@ -199,7 +195,7 @@
 
   <button id="sendBtn" type="button" class="btn-send">📤 ОТПРАВИТЬ ОТЧЕТ</button>
   <button id="closeBtn" type="button" class="btn-close">🔒 ЗАКРЫТЬ</button>
-  <div class="sub-hint">* Все данные отправляются боту. Дренаж 1,2 и последнего полива — отдельные поля.</div>
+  <div class="sub-hint">* Все данные отправляются боту. Для 1/2/последнего полива — отдельные дренажные поля (% + EC/pH). EC/pH капельницы и мл — в последнем поливе.</div>
 </div>
 
 <script>
@@ -225,23 +221,25 @@
       addValve: "➕ Добавить клапан +",
       maxValves: "❌ Максимум 10 клапанов",
       wateringCount: "Количество поливов (за день)",
-      valvesHint: "Минимум 3, максимум 10. Для каждого: EC/pH дренажа, EC/pH капельницы, мл капельницы, дренаж 1-го, 2-го и последнего полива.",
+      valvesHint: "Минимум 3, максимум 10. Для каждого: дренаж 1-го/2-го/последнего полива (% + EC/pH), а EC/pH капельницы и мл — только в блоке последнего полива.",
       notesTitle: "📝 Журнал наблюдений",
       notesPlaceholder: "Доп. информация, проблемы, калибровка, замечания...",
       sendBtn: "📤 ОТПРАВИТЬ ОТЧЕТ",
       closeBtn: "🔒 ЗАКРЫТЬ",
-      subHintBottom: "* Все данные отправляются боту. Дренаж 1,2 и последнего полива — отдельные поля.",
+      subHintBottom: "* Все данные отправляются боту. Для 1/2/последнего полива — отдельные дренажные поля (% + EC/pH). EC/pH капельницы и мл — в последнем поливе.",
       valveBadge: "🚰 Клапан {n}",
       valveSubtitle: "Дренаж + капельница",
-      phDrain: "pH дренажа",
-      ecDrain: "EC дренажа, мСм/см",
+      drainByWatering: "💧 Дренаж по поливам:",
+      drainBlock1: "1-й полив",
+      drainBlock2: "2-й полив",
+      drainBlockLast: "Последний полив",
+      drainPercent: "Дренаж, %",
+      drainEc: "EC дренажа, мСм/см",
+      drainPh: "pH дренажа",
+      dripperBlockLast: "Капельница (последний полив)",
       ecDripper: "EC капельницы, мСм/см",
       phDripper: "pH капельницы",
       mlDripper: "мл капельницы",
-      drainByWatering: "💧 Дренаж по поливам (%):",
-      drain1: "1-й полив, %",
-      drain2: "2-й полив, %",
-      drainLast: "Последний полив, %",
       alertOpenInside: "❌ Откройте форму внутри Telegram WebApp",
       confirmEmpty: "Вы не заполнили ни одного поля. Отправить пустой отчет?",
       sendDone: "✅ Отправлено!",
@@ -250,7 +248,7 @@
       schemaTemp: "день, ночь, средняя, мин, макс",
       schemaHum: "день, ночь, средняя, мин, макс",
       schemaWatering: "количество_поливов_за_день",
-      schemaValve: "EC_дренажа, pH_дренажа, EC_капельницы, pH_капельницы, мл_капельницы, дренаж_1_полив_%, дренаж_2_полив_%, дренаж_последний_полив_%",
+      schemaValve: "дренаж_1_полив_%, EC_дренаж_1, pH_дренаж_1, дренаж_2_полив_%, EC_дренаж_2, pH_дренаж_2, дренаж_последний_полив_%, EC_дренаж_последний, pH_дренаж_последний, EC_капельницы_последний, pH_капельницы_последний, мл_капельницы_последний",
       loadedLog: "Форма загружена."
     },
     hy: {
@@ -270,23 +268,25 @@
       addValve: "➕ Ավելացնել փական +",
       maxValves: "❌ Առավելագույնը 10 փական",
       wateringCount: "Ջրումների քանակը (օրական)",
-      valvesHint: "Նվազագույնը 3, առավելագույնը 10։ Յուրաքանչյուրի համար՝ EC/pH դրենաժի, EC/pH կաթիլի, կաթիլի մլ, 1-ին, 2-րդ և վերջին ջրման դրենաժ։",
+      valvesHint: "Նվազագույնը 3, առավելագույնը 10։ Յուրաքանչյուր փականի համար՝ 1-ին/2-րդ/վերջին ջրման դրենաժ (% + EC/pH), իսկ կաթիլի EC/pH և մլ՝ միայն վերջին ջրման բլոկում։",
       notesTitle: "📝 Դիտարկումների գրանցում",
       notesPlaceholder: "Լրացուցիչ տեղեկություն, խնդիրներ, կալիբրավորում, նշումներ...",
       sendBtn: "📤 ՈՒՂԱՐԿԵԼ ՀԱՇՎԵՏՎՈՒԹՅՈՒՆԸ",
       closeBtn: "🔒 ՓԱԿԵԼ",
-      subHintBottom: "* Բոլոր տվյալները ուղարկվում են բոտին։",
+      subHintBottom: "* Բոլոր տվյալները ուղարկվում են բոտին։ 1/2/վերջին ջրման համար առանձին դրենաժային դաշտեր (% + EC/pH)։ Կաթիլի EC/pH և մլ՝ միայն վերջին ջրում։",
       valveBadge: "🚰 Փական {n}",
       valveSubtitle: "Դրենաժ + կաթիլ",
-      phDrain: "pH դրենաժի",
-      ecDrain: "EC դրենաժի, mS/cm",
+      drainByWatering: "💧 Դրենաժ ըստ ջրումների:",
+      drainBlock1: "1-ին ջրում",
+      drainBlock2: "2-րդ ջրում",
+      drainBlockLast: "Վերջին ջրում",
+      drainPercent: "Դրենաժ, %",
+      drainEc: "EC դրենաժի, mS/cm",
+      drainPh: "pH դրենաժի",
+      dripperBlockLast: "Կաթիլ (վերջին ջրում)",
       ecDripper: "EC կաթիլի, mS/cm",
       phDripper: "pH կաթիլի",
       mlDripper: "կաթիլի մլ",
-      drainByWatering: "💧 Դրենաժ ըստ ջրումների (%):",
-      drain1: "1-ին ջրում, %",
-      drain2: "2-րդ ջրում, %",
-      drainLast: "Վերջին ջրում, %",
       alertOpenInside: "❌ Բացեք ձևը Telegram WebApp-ի ներսում",
       confirmEmpty: "Դուք ոչ մի դաշտ չեք լրացրել։ Ուղարկե՞լ դատարկ հաշվետվություն։",
       sendDone: "✅ Ուղարկված է!",
@@ -295,7 +295,7 @@
       schemaTemp: "ցերեկ, գիշեր, միջին, նվազ., առավ.",
       schemaHum: "ցերեկ, գիշեր, միջին, նվազ., առավ.",
       schemaWatering: "օրական_ջրումների_քանակ",
-      schemaValve: "EC_դրենաժ, pH_դրենաժ, EC_կաթիլ, pH_կաթիլ, մլ_կաթիլ, դրենաժ_1_ջրում_%, դրենաժ_2_ջրում_%, դրենաժ_վերջին_ջրում_%",
+      schemaValve: "դրենաժ_1_ջրում_%, EC_դրենաժ_1, pH_դրենաժ_1, դրենաժ_2_ջրում_%, EC_դրենաժ_2, pH_դրենաժ_2, դրենաժ_վերջին_ջրում_%, EC_դրենաժ_վերջին, pH_դրենաժ_վերջին, EC_կաթիլ_վերջին, pH_կաթիլ_վերջին, մլ_կաթիլ_վերջին",
       loadedLog: "Ձևը բեռնվել է։"
     }
   };
@@ -391,74 +391,58 @@
       card.className = "valve-card";
       card.setAttribute("data-valve-id", String(valveNumber));
 
-      var drainEcId = "drain_ec_" + valveNumber;
-      var drainPhId = "drain_ph_" + valveNumber;
+      var drain1Id = "drain1_" + valveNumber;
+      var drain1EcId = "drain1_ec_" + valveNumber;
+      var drain1PhId = "drain1_ph_" + valveNumber;
+
+      var drain2Id = "drain2_" + valveNumber;
+      var drain2EcId = "drain2_ec_" + valveNumber;
+      var drain2PhId = "drain2_ph_" + valveNumber;
+
+      var drainLastId = "drain_last_" + valveNumber;
+      var drainLastEcId = "drain_last_ec_" + valveNumber;
+      var drainLastPhId = "drain_last_ph_" + valveNumber;
+
       var dripperEcId = "dripper_ec_" + valveNumber;
       var dripperPhId = "dripper_ph_" + valveNumber;
       var dripperMlId = "dripper_ml_" + valveNumber;
-      var drain1Id = "drain1_" + valveNumber;
-      var drain2Id = "drain2_" + valveNumber;
-      var drainLastId = "drain_last_" + valveNumber;
 
       card.innerHTML =
         '<div class="valve-title">' +
-        '<span class="badge-valve">' +
-        t.valveBadge.replace("{n}", String(valveNumber)) +
-        "</span>" +
-        '<span style="font-size:12px; font-weight:normal;">' +
-        t.valveSubtitle +
-        "</span>" +
+          '<span class="badge-valve">' + t.valveBadge.replace("{n}", String(valveNumber)) + "</span>" +
+          '<span style="font-size:12px; font-weight:normal;">' + t.valveSubtitle + "</span>" +
         "</div>" +
-        '<div class="ec-ph-row">' +
-        '<input type="number" id="' +
-        drainEcId +
-        '" step="0.1" placeholder="' +
-        t.ecDrain +
-        '">' +
-        '<input type="number" id="' +
-        drainPhId +
-        '" step="0.1" placeholder="' +
-        t.phDrain +
-        '">' +
+
+        '<div class="drain-label">' + t.drainByWatering + "</div>" +
+
+        '<div class="drain-label">' + t.drainBlock1 + "</div>" +
+        '<div class="drain-group">' +
+          '<input type="number" id="' + drain1Id + '" step="0.1" placeholder="' + t.drainPercent + '">' +
+          '<input type="number" id="' + drain1EcId + '" step="0.1" placeholder="' + t.drainEc + '">' +
+          '<input type="number" id="' + drain1PhId + '" step="0.1" placeholder="' + t.drainPh + '">' +
         "</div>" +
+
+        '<div class="drain-label">' + t.drainBlock2 + "</div>" +
+        '<div class="drain-group">' +
+          '<input type="number" id="' + drain2Id + '" step="0.1" placeholder="' + t.drainPercent + '">' +
+          '<input type="number" id="' + drain2EcId + '" step="0.1" placeholder="' + t.drainEc + '">' +
+          '<input type="number" id="' + drain2PhId + '" step="0.1" placeholder="' + t.drainPh + '">' +
+        "</div>" +
+
+        '<div class="drain-label">' + t.drainBlockLast + "</div>" +
+        '<div class="drain-group">' +
+          '<input type="number" id="' + drainLastId + '" step="0.1" placeholder="' + t.drainPercent + '">' +
+          '<input type="number" id="' + drainLastEcId + '" step="0.1" placeholder="' + t.drainEc + '">' +
+          '<input type="number" id="' + drainLastPhId + '" step="0.1" placeholder="' + t.drainPh + '">' +
+        "</div>" +
+
+        '<div class="drain-label">' + t.dripperBlockLast + "</div>" +
         '<div class="ec-ph-row">' +
-        '<input type="number" id="' +
-        dripperEcId +
-        '" step="0.1" placeholder="' +
-        t.ecDripper +
-        '">' +
-        '<input type="number" id="' +
-        dripperPhId +
-        '" step="0.1" placeholder="' +
-        t.phDripper +
-        '">' +
+          '<input type="number" id="' + dripperEcId + '" step="0.1" placeholder="' + t.ecDripper + '">' +
+          '<input type="number" id="' + dripperPhId + '" step="0.1" placeholder="' + t.phDripper + '">' +
         "</div>" +
         '<div class="row">' +
-        '<input type="number" id="' +
-        dripperMlId +
-        '" step="0.1" placeholder="' +
-        t.mlDripper +
-        '">' +
-        "</div>" +
-        '<div class="drain-label">' +
-        t.drainByWatering +
-        "</div>" +
-        '<div class="drain-group">' +
-        '<input type="number" id="' +
-        drain1Id +
-        '" step="0.1" placeholder="' +
-        t.drain1 +
-        '">' +
-        '<input type="number" id="' +
-        drain2Id +
-        '" step="0.1" placeholder="' +
-        t.drain2 +
-        '">' +
-        '<input type="number" id="' +
-        drainLastId +
-        '" step="0.1" placeholder="' +
-        t.drainLast +
-        '">' +
+          '<input type="number" id="' + dripperMlId + '" step="0.1" placeholder="' + t.mlDripper + '">' +
         "</div>";
 
       return card;
@@ -468,14 +452,21 @@
       var saved = {};
       for (var i = 1; i <= currentValvesCount; i++) {
         saved[i] = {
-          drain_ec: (document.getElementById("drain_ec_" + i) || {}).value || "",
-          drain_ph: (document.getElementById("drain_ph_" + i) || {}).value || "",
+          drain1: (document.getElementById("drain1_" + i) || {}).value || "",
+          drain1_ec: (document.getElementById("drain1_ec_" + i) || {}).value || "",
+          drain1_ph: (document.getElementById("drain1_ph_" + i) || {}).value || "",
+
+          drain2: (document.getElementById("drain2_" + i) || {}).value || "",
+          drain2_ec: (document.getElementById("drain2_ec_" + i) || {}).value || "",
+          drain2_ph: (document.getElementById("drain2_ph_" + i) || {}).value || "",
+
+          drain_last: (document.getElementById("drain_last_" + i) || {}).value || "",
+          drain_last_ec: (document.getElementById("drain_last_ec_" + i) || {}).value || "",
+          drain_last_ph: (document.getElementById("drain_last_ph_" + i) || {}).value || "",
+
           dripper_ec: (document.getElementById("dripper_ec_" + i) || {}).value || "",
           dripper_ph: (document.getElementById("dripper_ph_" + i) || {}).value || "",
-          dripper_ml: (document.getElementById("dripper_ml_" + i) || {}).value || "",
-          drain1: (document.getElementById("drain1_" + i) || {}).value || "",
-          drain2: (document.getElementById("drain2_" + i) || {}).value || "",
-          drain_last: (document.getElementById("drain_last_" + i) || {}).value || ""
+          dripper_ml: (document.getElementById("dripper_ml_" + i) || {}).value || ""
         };
       }
       return saved;
@@ -486,22 +477,22 @@
         var i = Number(key);
         var vals = saved[i];
         var el;
-        el = document.getElementById("drain_ec_" + i);
-        if (el) el.value = vals.drain_ec;
-        el = document.getElementById("drain_ph_" + i);
-        if (el) el.value = vals.drain_ph;
-        el = document.getElementById("dripper_ec_" + i);
-        if (el) el.value = vals.dripper_ec;
-        el = document.getElementById("dripper_ph_" + i);
-        if (el) el.value = vals.dripper_ph;
-        el = document.getElementById("dripper_ml_" + i);
-        if (el) el.value = vals.dripper_ml;
-        el = document.getElementById("drain1_" + i);
-        if (el) el.value = vals.drain1;
-        el = document.getElementById("drain2_" + i);
-        if (el) el.value = vals.drain2;
-        el = document.getElementById("drain_last_" + i);
-        if (el) el.value = vals.drain_last;
+
+        el = document.getElementById("drain1_" + i); if (el) el.value = vals.drain1;
+        el = document.getElementById("drain1_ec_" + i); if (el) el.value = vals.drain1_ec;
+        el = document.getElementById("drain1_ph_" + i); if (el) el.value = vals.drain1_ph;
+
+        el = document.getElementById("drain2_" + i); if (el) el.value = vals.drain2;
+        el = document.getElementById("drain2_ec_" + i); if (el) el.value = vals.drain2_ec;
+        el = document.getElementById("drain2_ph_" + i); if (el) el.value = vals.drain2_ph;
+
+        el = document.getElementById("drain_last_" + i); if (el) el.value = vals.drain_last;
+        el = document.getElementById("drain_last_ec_" + i); if (el) el.value = vals.drain_last_ec;
+        el = document.getElementById("drain_last_ph_" + i); if (el) el.value = vals.drain_last_ph;
+
+        el = document.getElementById("dripper_ec_" + i); if (el) el.value = vals.dripper_ec;
+        el = document.getElementById("dripper_ph_" + i); if (el) el.value = vals.dripper_ph;
+        el = document.getElementById("dripper_ml_" + i); if (el) el.value = vals.dripper_ml;
       });
     }
 
@@ -544,14 +535,22 @@
       for (var i = 1; i <= currentValvesCount; i++) {
         valvesArray.push({
           id: i,
-          drain_ec: (document.getElementById("drain_ec_" + i) || {}).value || "",
-          drain_ph: (document.getElementById("drain_ph_" + i) || {}).value || "",
+
+          drain_first_percent: (document.getElementById("drain1_" + i) || {}).value || "",
+          drain_first_ec: (document.getElementById("drain1_ec_" + i) || {}).value || "",
+          drain_first_ph: (document.getElementById("drain1_ph_" + i) || {}).value || "",
+
+          drain_second_percent: (document.getElementById("drain2_" + i) || {}).value || "",
+          drain_second_ec: (document.getElementById("drain2_ec_" + i) || {}).value || "",
+          drain_second_ph: (document.getElementById("drain2_ph_" + i) || {}).value || "",
+
+          drain_last_percent: (document.getElementById("drain_last_" + i) || {}).value || "",
+          drain_last_ec: (document.getElementById("drain_last_ec_" + i) || {}).value || "",
+          drain_last_ph: (document.getElementById("drain_last_ph_" + i) || {}).value || "",
+
           dripper_ec: (document.getElementById("dripper_ec_" + i) || {}).value || "",
           dripper_ph: (document.getElementById("dripper_ph_" + i) || {}).value || "",
-          dripper_ml: (document.getElementById("dripper_ml_" + i) || {}).value || "",
-          drain_first_percent: (document.getElementById("drain1_" + i) || {}).value || "",
-          drain_second_percent: (document.getElementById("drain2_" + i) || {}).value || "",
-          drain_last_percent: (document.getElementById("drain_last_" + i) || {}).value || ""
+          dripper_ml: (document.getElementById("dripper_ml_" + i) || {}).value || ""
         });
       }
       return valvesArray;
@@ -595,14 +594,10 @@
       for (var vi = 0; vi < valves.length; vi++) {
         var v = valves[vi];
         if (
-          v.drain_ec ||
-          v.drain_ph ||
-          v.dripper_ec ||
-          v.dripper_ph ||
-          v.dripper_ml ||
-          v.drain_first_percent ||
-          v.drain_second_percent ||
-          v.drain_last_percent
+          v.drain_first_percent || v.drain_first_ec || v.drain_first_ph ||
+          v.drain_second_percent || v.drain_second_ec || v.drain_second_ph ||
+          v.drain_last_percent || v.drain_last_ec || v.drain_last_ph ||
+          v.dripper_ec || v.dripper_ph || v.dripper_ml
         ) {
           hasValveData = true;
           break;
@@ -634,7 +629,7 @@
         : t.guest;
 
       var payload = {
-        version: "6.1",
+        version: "6.2",
         timestamp: new Date().toISOString(),
         init_data: tg.initData || "",
         user: {
