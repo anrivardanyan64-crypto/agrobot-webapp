@@ -237,6 +237,9 @@
       drainEc: "EC дренажа, мСм/см",
       drainPh: "pH дренажа",
       dripperBlockLast: "Капельница (последний полив)",
+      dripperBlockSecond: "Капельница (2-й полив)",
+      ecDripperSecond: "EC капельницы (2-й), мСм/см",
+      phDripperSecond: "pH капельницы (2-й)",
       ecDripper: "EC капельницы, мСм/см",
       phDripper: "pH капельницы",
       mlDripper: "мл капельницы",
@@ -248,7 +251,7 @@
       schemaTemp: "день, ночь, средняя, мин, макс",
       schemaHum: "день, ночь, средняя, мин, макс",
       schemaWatering: "количество_поливов_за_день",
-      schemaValve: "дренаж_1_полив_%, EC_дренаж_1, pH_дренаж_1, дренаж_2_полив_%, EC_дренаж_2, pH_дренаж_2, дренаж_последний_полив_%, EC_дренаж_последний, pH_дренаж_последний, EC_капельницы_последний, pH_капельницы_последний, мл_капельницы_последний",
+      schemaValve: "дренаж_1_полив_%, EC_дренаж_1, pH_дренаж_1, дренаж_2_полив_%, EC_дренаж_2, pH_дренаж_2, EC_капельницы_2, pH_капельницы_2, дренаж_последний_полив_%, EC_дренаж_последний, pH_дренаж_последний, EC_капельницы_последний, pH_капельницы_последний, мл_капельницы_последний",
       loadedLog: "Форма загружена."
     },
     hy: {
@@ -284,6 +287,9 @@
       drainEc: "EC դրենաժի, mS/cm",
       drainPh: "pH դրենաժի",
       dripperBlockLast: "Կաթիլ (վերջին ջրում)",
+      dripperBlockSecond: "Կաթիլ (2-րդ ջրում)",
+      ecDripperSecond: "EC կաթիլի (2-րդ), mS/cm",
+      phDripperSecond: "pH կաթիլի (2-րդ)",
       ecDripper: "EC կաթիլի, mS/cm",
       phDripper: "pH կաթիլի",
       mlDripper: "կաթիլի մլ",
@@ -295,7 +301,7 @@
       schemaTemp: "ցերեկ, գիշեր, միջին, նվազ., առավ.",
       schemaHum: "ցերեկ, գիշեր, միջին, նվազ., առավ.",
       schemaWatering: "օրական_ջրումների_քանակ",
-      schemaValve: "դրենաժ_1_ջրում_%, EC_դրենաժ_1, pH_դրենաժ_1, դրենաժ_2_ջրում_%, EC_դրենաժ_2, pH_դրենաժ_2, դրենաժ_վերջին_ջրում_%, EC_դրենաժ_վերջին, pH_դրենաժ_վերջին, EC_կաթիլ_վերջին, pH_կաթիլ_վերջին, մլ_կաթիլ_վերջին",
+      schemaValve: "դրենաժ_1_ջրում_%, EC_դրենաժ_1, pH_դրենաժ_1, դրենաժ_2_ջրում_%, EC_դրենաժ_2, pH_դրենաժ_2, EC_կաթիլ_2, pH_կաթիլ_2, դրենաժ_վերջին_ջրում_%, EC_դրենաժ_վերջին, pH_դրենաժ_վերջին, EC_կաթիլ_վերջին, pH_կաթիլ_վերջին, մլ_կաթիլ_վերջին",
       loadedLog: "Ձևը բեռնվել է։"
     }
   };
@@ -390,52 +396,61 @@
       var card = document.createElement("div");
       card.className = "valve-card";
       card.setAttribute("data-valve-id", String(valveNumber));
-
+    
       var drain1Id = "drain1_" + valveNumber;
       var drain1EcId = "drain1_ec_" + valveNumber;
       var drain1PhId = "drain1_ph_" + valveNumber;
-
+    
       var drain2Id = "drain2_" + valveNumber;
       var drain2EcId = "drain2_ec_" + valveNumber;
       var drain2PhId = "drain2_ph_" + valveNumber;
-
+      var dripper2EcId = "dripper2_ec_" + valveNumber;
+      var dripper2PhId = "dripper2_ph_" + valveNumber;
+    
       var drainLastId = "drain_last_" + valveNumber;
       var drainLastEcId = "drain_last_ec_" + valveNumber;
       var drainLastPhId = "drain_last_ph_" + valveNumber;
-
+    
       var dripperEcId = "dripper_ec_" + valveNumber;
       var dripperPhId = "dripper_ph_" + valveNumber;
       var dripperMlId = "dripper_ml_" + valveNumber;
-
+    
       card.innerHTML =
         '<div class="valve-title">' +
           '<span class="badge-valve">' + t.valveBadge.replace("{n}", String(valveNumber)) + "</span>" +
           '<span style="font-size:12px; font-weight:normal;">' + t.valveSubtitle + "</span>" +
         "</div>" +
-
+    
         '<div class="drain-label">' + t.drainByWatering + "</div>" +
-
+    
+        // 1-й полив
         '<div class="drain-label">' + t.drainBlock1 + "</div>" +
         '<div class="drain-group">' +
           '<input type="number" id="' + drain1Id + '" step="0.1" placeholder="' + t.drainPercent + '">' +
           '<input type="number" id="' + drain1EcId + '" step="0.1" placeholder="' + t.drainEc + '">' +
           '<input type="number" id="' + drain1PhId + '" step="0.1" placeholder="' + t.drainPh + '">' +
         "</div>" +
-
+    
+        // 2-й полив
         '<div class="drain-label">' + t.drainBlock2 + "</div>" +
         '<div class="drain-group">' +
           '<input type="number" id="' + drain2Id + '" step="0.1" placeholder="' + t.drainPercent + '">' +
           '<input type="number" id="' + drain2EcId + '" step="0.1" placeholder="' + t.drainEc + '">' +
           '<input type="number" id="' + drain2PhId + '" step="0.1" placeholder="' + t.drainPh + '">' +
         "</div>" +
-
+        '<div class="drain-label">' + t.dripperBlockSecond + "</div>" +
+        '<div class="ec-ph-row">' +
+          '<input type="number" id="' + dripper2EcId + '" step="0.1" placeholder="' + t.ecDripperSecond + '">' +
+          '<input type="number" id="' + dripper2PhId + '" step="0.1" placeholder="' + t.phDripperSecond + '">' +
+        "</div>" +
+    
+        // Последний полив
         '<div class="drain-label">' + t.drainBlockLast + "</div>" +
         '<div class="drain-group">' +
           '<input type="number" id="' + drainLastId + '" step="0.1" placeholder="' + t.drainPercent + '">' +
           '<input type="number" id="' + drainLastEcId + '" step="0.1" placeholder="' + t.drainEc + '">' +
           '<input type="number" id="' + drainLastPhId + '" step="0.1" placeholder="' + t.drainPh + '">' +
         "</div>" +
-
         '<div class="drain-label">' + t.dripperBlockLast + "</div>" +
         '<div class="ec-ph-row">' +
           '<input type="number" id="' + dripperEcId + '" step="0.1" placeholder="' + t.ecDripper + '">' +
@@ -444,7 +459,7 @@
         '<div class="row">' +
           '<input type="number" id="' + dripperMlId + '" step="0.1" placeholder="' + t.mlDripper + '">' +
         "</div>";
-
+    
       return card;
     }
 
@@ -460,6 +475,9 @@
           drain2_ec: (document.getElementById("drain2_ec_" + i) || {}).value || "",
           drain2_ph: (document.getElementById("drain2_ph_" + i) || {}).value || "",
 
+          dripper2_ec: (document.getElementById("dripper2_ec_" + i) || {}).value || "",
+          dripper2_ph: (document.getElementById("dripper2_ph_" + i) || {}).value || "",
+          
           drain_last: (document.getElementById("drain_last_" + i) || {}).value || "",
           drain_last_ec: (document.getElementById("drain_last_ec_" + i) || {}).value || "",
           drain_last_ph: (document.getElementById("drain_last_ph_" + i) || {}).value || "",
@@ -485,7 +503,10 @@
         el = document.getElementById("drain2_" + i); if (el) el.value = vals.drain2;
         el = document.getElementById("drain2_ec_" + i); if (el) el.value = vals.drain2_ec;
         el = document.getElementById("drain2_ph_" + i); if (el) el.value = vals.drain2_ph;
-
+        
+        el = document.getElementById("dripper2_ec_" + i); if (el) el.value = vals.dripper2_ec;
+        el = document.getElementById("dripper2_ph_" + i); if (el) el.value = vals.dripper2_ph;
+        
         el = document.getElementById("drain_last_" + i); if (el) el.value = vals.drain_last;
         el = document.getElementById("drain_last_ec_" + i); if (el) el.value = vals.drain_last_ec;
         el = document.getElementById("drain_last_ph_" + i); if (el) el.value = vals.drain_last_ph;
@@ -543,7 +564,10 @@
           drain_second_percent: (document.getElementById("drain2_" + i) || {}).value || "",
           drain_second_ec: (document.getElementById("drain2_ec_" + i) || {}).value || "",
           drain_second_ph: (document.getElementById("drain2_ph_" + i) || {}).value || "",
-
+          
+          dripper_second_ec: (document.getElementById("dripper2_ec_" + i) || {}).value || "",
+          dripper_second_ph: (document.getElementById("dripper2_ph_" + i) || {}).value || "",
+          
           drain_last_percent: (document.getElementById("drain_last_" + i) || {}).value || "",
           drain_last_ec: (document.getElementById("drain_last_ec_" + i) || {}).value || "",
           drain_last_ph: (document.getElementById("drain_last_ph_" + i) || {}).value || "",
@@ -596,6 +620,7 @@
         if (
           v.drain_first_percent || v.drain_first_ec || v.drain_first_ph ||
           v.drain_second_percent || v.drain_second_ec || v.drain_second_ph ||
+          v.dripper_second_ec || v.dripper_second_ph ||
           v.drain_last_percent || v.drain_last_ec || v.drain_last_ph ||
           v.dripper_ec || v.dripper_ph || v.dripper_ml
         ) {
